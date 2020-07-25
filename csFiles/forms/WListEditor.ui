@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>WListEditor</class>
+ <widget class="QWidget" name="WListEditor">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>640</width>
+    <height>480</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="leftMargin">
+    <number>0</number>
+   </property>
+   <property name="topMargin">
+    <number>0</number>
+   </property>
+   <property name="rightMargin">
+    <number>0</number>
+   </property>
+   <property name="bottomMargin">
+    <number>0</number>
+   </property>
+   <property name="spacing">
+    <number>4</number>
+   </property>
+   <item row="0" column="0" rowspan="6">
+    <widget class="QListView" name="listView"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QPushButton" name="addButton">
+     <property name="icon">
+      <iconset resource="../resources/findgrep.qrc">
+       <normaloff>:/icons/plus.svg</normaloff>:/icons/plus.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="1">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>177</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="2" column="1">
+    <widget class="QPushButton" name="upButton">
+     <property name="icon">
+      <iconset resource="../resources/findgrep.qrc">
+       <normaloff>:/icons/up.svg</normaloff>:/icons/up.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QPushButton" name="downButton">
+     <property name="icon">
+      <iconset resource="../resources/findgrep.qrc">
+       <normaloff>:/icons/down.svg</normaloff>:/icons/down.svg</iconset>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>177</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="1">
+    <widget class="QPushButton" name="removeButton">
+     <property name="icon">
+      <iconset resource="../resources/findgrep.qrc">
+       <normaloff>:/icons/minus.svg</normaloff>:/icons/minus.svg</iconset>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <tabstops>
+  <tabstop>listView</tabstop>
+  <tabstop>addButton</tabstop>
+  <tabstop>upButton</tabstop>
+  <tabstop>downButton</tabstop>
+  <tabstop>removeButton</tabstop>
+ </tabstops>
+ <resources>
+  <include location="../resources/findgrep.qrc"/>
+ </resources>
+ <connections/>
+</ui>
