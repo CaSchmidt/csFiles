@@ -13,6 +13,10 @@ include(FormatOutputName)
 
 find_package(Qt5Widgets 5.6 REQUIRED)
 
+add_subdirectory(../csQt/csQt
+  ${CMAKE_CURRENT_BINARY_DIR}/csQt
+  )
+
 ### Project ##################################################################
 
 list(APPEND csFiles_AUX
