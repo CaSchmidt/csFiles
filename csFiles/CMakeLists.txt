@@ -19,14 +19,9 @@ add_subdirectory(../csQt/csQt
 
 ### Project ##################################################################
 
-list(APPEND csFiles_AUX
-  resources/csFiles.qrc
-  )
-
 list(APPEND csFiles_FORMS
   forms/WFind.ui
   forms/WGrep.ui
-  forms/WListEditor.ui
   forms/WMainWindow.ui
   )
 
@@ -41,7 +36,6 @@ list(APPEND csFiles_HEADERS
   include/WFileList.h
   include/WFind.h
   include/WGrep.h
-  include/WListEditor.h
   include/WMainWindow.h
   )
 
@@ -54,7 +48,6 @@ list(APPEND csFiles_SOURCES
   src/WFileList.cpp
   src/WFind.cpp
   src/WGrep.cpp
-  src/WListEditor.cpp
   src/WMainWindow.cpp
   src/main.cpp
   )
@@ -62,7 +55,6 @@ list(APPEND csFiles_SOURCES
 ### Target ###################################################################
 
 add_executable(csFiles
-  ${csFiles_AUX}
   ${csFiles_FORMS}
   ${csFiles_HEADERS}
   ${csFiles_SOURCES}
@@ -91,4 +83,4 @@ target_include_directories(csFiles PRIVATE
   ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
 
-target_link_libraries(csFiles Qt5::Widgets)
+target_link_libraries(csFiles csQt Qt5::Widgets)

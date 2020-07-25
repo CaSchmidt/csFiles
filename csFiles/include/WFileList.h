@@ -32,11 +32,11 @@
 #ifndef WFILELIST_H
 #define WFILELIST_H
 
-#include "WListEditor.h"
+#include <csQt/csWListEditor.h>
 
 class QDir;
 
-class WFileList : public WListEditor {
+class WFileList : public csWListEditor {
   Q_OBJECT
 public:
   WFileList(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
