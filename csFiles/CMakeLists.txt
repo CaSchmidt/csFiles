@@ -27,4 +27,5 @@ add_subdirectory(3rdparty/pcre2-src)
 
 ### Subdirectories ###########################################################
 
+add_subdirectory(matching)
 add_subdirectory(ui)
