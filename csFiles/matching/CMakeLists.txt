@@ -11,6 +11,7 @@ list(APPEND matching_HEADERS
 
 list(APPEND matching_SOURCES
   src/IMatcher.cpp
+  src/IMatcherFactory.cpp
   src/Pcre2Matcher.cpp
   src/TextBuffer.cpp
   src/TextInfo.cpp
@@ -37,9 +38,10 @@ endif()
 
 target_include_directories(matching
   PRIVATE ${csFiles_BINARY_DIR}/3rdparty/pcre2-src
-  PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
+  PUBLIC  ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
 
 target_link_libraries(matching
   PRIVATE csUtil Qt5::Core
+  PUBLIC  pcre2-8
   )
