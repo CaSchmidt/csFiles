@@ -78,17 +78,13 @@ void WFileList::setEnabledButtons(const bool add_on, const bool remove_on)
 
 QString WFileList::selectionFilter() const
 {
-  return _filter;
+  return _selectionFilter;
 }
 
 void WFileList::setSelectionFilter(const QString& filter)
 {
-  _filter = filter;
-}
-
-void WFileList::clearFiles()
-{
-  _model->clear();
+  _selectionFilter = filter;
+  emit selectionFilterChanged(_selectionFilter);
 }
 
 QStringList WFileList::files() const
@@ -112,30 +108,48 @@ void WFileList::appendFiles(const QString& rootPath, const QStringList& files)
   appendFiles(QDir(rootPath), files);
 }
 
+////// public slots //////////////////////////////////////////////////////////
+
+void WFileList::clearList()
+{
+  _model->clear();
+}
+
+void WFileList::clearRoot()
+{
+  _model->clearRoot();
+}
+
+void WFileList::copyList()
+{
+  QStringList files = _model->files();
+  if( files.isEmpty() ) {
+    return;
+  }
+  qSort(files);
+  csSetClipboardText(files);
+}
+
 ////// public ////////////////////////////////////////////////////////////////
 
 void WFileList::showContextMenu(const QPoint& pos)
 {
   QMenu menu;
-  QAction *copy = menu.addAction(tr("Copy list"));
+  QAction *copyList = menu.addAction(tr("Copy list"));
   menu.addSeparator();
-  QAction *clear = menu.addAction(tr("Clear list"));
+  QAction *clearList = menu.addAction(tr("Clear list"));
   menu.addSeparator();
   QAction *clearRoot = menu.addAction(tr("Clear root"));
+
   QAction *choice = menu.exec(view()->mapToGlobal(pos));
-  if( choice == nullptr ) {
+  if(        choice == nullptr ) {
     return;
-  }
-  if(        choice == copy ) {
-    QStringList files = _model->files();
-    if( !files.empty() ) {
-      qSort(files);
-      csSetClipboardText(files);
-    }
+  } else if( choice == copyList ) {
+    WFileList::copyList();
   } else if( choice == clearRoot ) {
-    _model->clearRoot();
-  } else if( choice == clear ) {
-    _model->clear();
+    WFileList::clearRoot();
+  } else if( choice == clearList ) {
+    WFileList::clearList();
   }
 }
 
@@ -144,9 +158,10 @@ void WFileList::showContextMenu(const QPoint& pos)
 void WFileList::onAdd()
 {
   const QStringList files =
-      QFileDialog::getOpenFileNames(this, tr("Select files"), QDir::currentPath(), _filter.isEmpty()
+      QFileDialog::getOpenFileNames(this, tr("Select files"), QDir::currentPath(),
+                                    _selectionFilter.isEmpty()
                                     ? tr("All files (*.*)")
-                                    : _filter);
+                                    : _selectionFilter);
   if( files.isEmpty() ) {
     return;
   }

@@ -38,6 +38,11 @@ class QDir;
 
 class WFileList : public csWListEditor {
   Q_OBJECT
+  Q_PROPERTY(QString selectionFilter
+             READ selectionFilter
+             WRITE setSelectionFilter
+             MEMBER _selectionFilter
+             NOTIFY selectionFilterChanged)
 public:
   WFileList(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WFileList();
@@ -47,12 +52,16 @@ public:
   QString selectionFilter() const;
   void setSelectionFilter(const QString& filter);
 
-  void clearFiles();
   QStringList files() const;
 
   void appendFiles(const QStringList& files);
   void appendFiles(const QDir& root, const QStringList& files);
   void appendFiles(const QString& rootPath, const QStringList& files);
+
+public slots:
+  void clearList();
+  void clearRoot();
+  void copyList();
 
 private slots:
   void showContextMenu(const QPoint& pos);
@@ -61,8 +70,11 @@ private:
   void onAdd() final;
   void onRemove() final;
 
-  QString _filter;
+  QString _selectionFilter{};
   class FilesModel *_model{nullptr};
+
+signals:
+  void selectionFilterChanged(const QString&);
 };
 
 #endif // WFILELIST_H
