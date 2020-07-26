@@ -29,12 +29,12 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtGui/QClipboard>
-#include <QtGui/QGuiApplication>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QListView>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QPushButton>
+
+#include <csQt/csQtUtil.h>
 
 #include "WFileList.h"
 
@@ -130,7 +130,7 @@ void WFileList::showContextMenu(const QPoint& pos)
     QStringList files = _model->files();
     if( !files.empty() ) {
       qSort(files);
-      QGuiApplication::clipboard()->setText(files.join(QChar::fromLatin1('\n')));
+      csSetClipboardText(files);
     }
   } else if( choice == clearRoot ) {
     _model->clearRoot();
