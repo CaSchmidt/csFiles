@@ -17,6 +17,10 @@ add_subdirectory(../csQt/csQt
   ${CMAKE_CURRENT_BINARY_DIR}/csQt
   )
 
+add_subdirectory(../csUtil/csUtil
+  ${CMAKE_CURRENT_BINARY_DIR}/csUtil
+  )
+
 set(PCRE2_BUILD_PCRE2_8   ON  CACHE BOOL "" FORCE)
 set(PCRE2_DEBUG           OFF CACHE BOOL "" FORCE)
 set(PCRE2_SUPPORT_JIT     ON  CACHE BOOL "" FORCE)

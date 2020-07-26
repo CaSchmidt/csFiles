@@ -73,13 +73,13 @@ public:
 
 protected:
   virtual bool impl_match(const char *first, const char *last) = 0;
-  virtual void resetPattern();
-
-  std::string _pattern{};
+  void resetPattern();
+  void setPattern(const std::string& pattern);
 
 private:
-  bool _ignoreCase{false};
-  bool _matchRegExp{false};
+  bool        _ignoreCase{false};
+  bool        _matchRegExp{false};
+  std::string _pattern{};
 };
 
 IMatcherPtr createPcre2Matcher();

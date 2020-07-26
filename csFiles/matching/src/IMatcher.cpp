@@ -31,14 +31,7 @@
 
 #include <csUtil/csStringUtil.h>
 
-#include "Pcre2Matcher.h"
-
-////// Public ////////////////////////////////////////////////////////////////
-
-IMatcherPtr createPcre2Matcher()
-{
-  return Pcre2Matcher::create();
-}
+#include "IMatcher.h"
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -96,4 +89,9 @@ std::string IMatcher::pattern() const
 void IMatcher::resetPattern()
 {
   _pattern.clear();
+}
+
+void IMatcher::setPattern(const std::string& pattern)
+{
+  _pattern = pattern;
 }

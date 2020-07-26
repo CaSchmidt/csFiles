@@ -2,7 +2,7 @@
 
 list(APPEND matching_HEADERS
   include/FileCache.h
-#  include/IMatcher.h
+  include/IMatcher.h
 #  include/Pcre2Matcher.h
   include/TextBuffer.h
   include/TextInfo.h
@@ -10,7 +10,7 @@ list(APPEND matching_HEADERS
   )
 
 list(APPEND matching_SOURCES
-#  src/IMatcher.cpp
+  src/IMatcher.cpp
 #  src/Pcre2Matcher.cpp
   src/TextBuffer.cpp
   src/TextInfo.cpp
@@ -23,10 +23,12 @@ add_library(matching STATIC
   ${matching_SOURCES}
   )
 
+format_output_name(matching "matching")
+
 target_include_directories(matching
   PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include
   )
 
 target_link_libraries(matching
-  PRIVATE Qt5::Core
+  PRIVATE csUtil Qt5::Core
   )
