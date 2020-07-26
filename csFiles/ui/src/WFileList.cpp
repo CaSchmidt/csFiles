@@ -76,6 +76,20 @@ void WFileList::setEnabledButtons(const bool add_on, const bool remove_on)
   button(Remove)->setEnabled(remove_on);
 }
 
+bool WFileList::autoRoot() const
+{
+  return _autoRoot;
+}
+
+void WFileList::setAutoRoot(const bool on)
+{
+  _autoRoot = on;
+  if( !_autoRoot ) {
+    clearRoot();
+  }
+  emit autoRootChanged(_autoRoot);
+}
+
 QString WFileList::selectionFilter() const
 {
   return _selectionFilter;
@@ -92,6 +106,8 @@ QStringList WFileList::files() const
   return _model->files();
 }
 
+////// public slots //////////////////////////////////////////////////////////
+
 void WFileList::appendFiles(const QStringList& files)
 {
   _model->append(files);
@@ -99,16 +115,16 @@ void WFileList::appendFiles(const QStringList& files)
 
 void WFileList::appendFiles(const QDir& root, const QStringList& files)
 {
-  _model->append(files);
-  _model->setRoot(root);
+  appendFiles(files);
+  if( _autoRoot ) {
+    _model->setRoot(root);
+  }
 }
 
 void WFileList::appendFiles(const QString& rootPath, const QStringList& files)
 {
   appendFiles(QDir(rootPath), files);
 }
-
-////// public slots //////////////////////////////////////////////////////////
 
 void WFileList::clearList()
 {
@@ -122,7 +138,7 @@ void WFileList::clearRoot()
 
 void WFileList::copyList()
 {
-  QStringList files = _model->files();
+  QStringList files = WFileList::files();
   if( files.isEmpty() ) {
     return;
   }
@@ -166,8 +182,7 @@ void WFileList::onAdd()
     return;
   }
   const QString path = QFileInfo(files.front()).absolutePath();
-  _model->append(files);
-  _model->setRoot(path);
+  appendFiles(path, files);
   QDir::setCurrent(path);
 }
 
@@ -175,11 +190,6 @@ void WFileList::onRemove()
 {
   const QModelIndexList selection = view()->selectionModel()->selectedIndexes();
 
-  QStringList files;
-  for(const QModelIndex& index : selection) {
-    const QString file = _model->data(index, Qt::EditRole).toString();
-    files.push_back(file);
-  }
-
+  const QStringList files = WFileList::files();
   _model->remove(files);
 }

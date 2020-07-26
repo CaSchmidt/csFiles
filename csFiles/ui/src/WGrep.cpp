@@ -40,6 +40,10 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 {
   ui->setupUi(this);
 
+  // User Interface //////////////////////////////////////////////////////////
+
+  ui->filesWidget->setAutoRoot(true);
+
   // Signals & Slots /////////////////////////////////////////////////////////
 
   connect(ui->patternEdit, &QLineEdit::textChanged, this, &WGrep::setTabLabel);

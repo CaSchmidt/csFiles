@@ -38,6 +38,11 @@ class QDir;
 
 class WFileList : public csWListEditor {
   Q_OBJECT
+  Q_PROPERTY(bool autoRoot
+             READ autoRoot
+             WRITE setAutoRoot
+             MEMBER _autoRoot
+             NOTIFY autoRootChanged)
   Q_PROPERTY(QString selectionFilter
              READ selectionFilter
              WRITE setSelectionFilter
@@ -49,16 +54,18 @@ public:
 
   void setEnabledButtons(const bool add_on, const bool remove_on);
 
+  bool autoRoot() const;
+  void setAutoRoot(const bool on);
+
   QString selectionFilter() const;
   void setSelectionFilter(const QString& filter);
 
   QStringList files() const;
 
+public slots:
   void appendFiles(const QStringList& files);
   void appendFiles(const QDir& root, const QStringList& files);
   void appendFiles(const QString& rootPath, const QStringList& files);
-
-public slots:
   void clearList();
   void clearRoot();
   void copyList();
@@ -70,10 +77,12 @@ private:
   void onAdd() final;
   void onRemove() final;
 
+  bool _autoRoot{false};
   QString _selectionFilter{};
   class FilesModel *_model{nullptr};
 
 signals:
+  void autoRootChanged(bool);
   void selectionFilterChanged(const QString&);
 };
 
