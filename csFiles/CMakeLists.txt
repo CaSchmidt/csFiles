@@ -17,6 +17,14 @@ add_subdirectory(../csQt/csQt
   ${CMAKE_CURRENT_BINARY_DIR}/csQt
   )
 
+set(PCRE2_BUILD_PCRE2_8   ON  CACHE BOOL "" FORCE)
+set(PCRE2_DEBUG           OFF CACHE BOOL "" FORCE)
+set(PCRE2_SUPPORT_JIT     ON  CACHE BOOL "" FORCE)
+set(PCRE2_BUILD_TESTS     OFF CACHE BOOL "" FORCE)
+set(PCRE2_BUILD_PCRE2GREP OFF CACHE BOOL "" FORCE)
+
+add_subdirectory(3rdparty/pcre2-src)
+
 ### Project ##################################################################
 
 list(APPEND csFiles_FORMS
