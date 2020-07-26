@@ -59,7 +59,7 @@ bool Pcre2Matcher::compile(const std::string& pattern)
   }
   _mdata = pcre2_match_data_create_from_pattern_8(_regexp, nullptr);
   if( isCompiled() ) {
-    _pattern = pattern;
+    setPattern(pattern);
   }
   return isCompiled();
 }
