@@ -106,9 +106,7 @@ void FilesModel::clear()
 void FilesModel::clearRoot()
 {
   _rootPath.clear();
-  const QModelIndex from = index(0);
-  const QModelIndex   to = index(rowCount() - 1);
-  emit dataChanged(from, to);
+  refreshModel();
 }
 
 QStringList FilesModel::files() const
@@ -128,6 +126,11 @@ void FilesModel::remove(const QStringList& files)
   endResetModel();
 }
 
+QString FilesModel::rootPath() const
+{
+  return _rootPath;
+}
+
 bool FilesModel::setRoot(const QDir& root)
 {
   if( !_rootPath.isEmpty() ) {
@@ -135,8 +138,15 @@ bool FilesModel::setRoot(const QDir& root)
   }
   _root = root;
   _rootPath = _root.absolutePath();
+  refreshModel();
+  return true;
+}
+
+////// private ///////////////////////////////////////////////////////////////
+
+void FilesModel::refreshModel()
+{
   const QModelIndex from = index(0);
   const QModelIndex   to = index(rowCount() - 1);
   emit dataChanged(from, to);
-  return true;
 }

@@ -62,6 +62,8 @@ public:
 
   QStringList files() const;
 
+  QString rootPath() const;
+
 public slots:
   void appendFiles(const QStringList& files);
   void appendFiles(const QDir& root, const QStringList& files);

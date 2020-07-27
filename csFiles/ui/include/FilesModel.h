@@ -52,9 +52,12 @@ public:
   void clearRoot();
   QStringList files() const;
   void remove(const QStringList& files);
+  QString rootPath() const;
   bool setRoot(const QDir& root);
 
 private:
+  void refreshModel();
+
   QVector<QString> _files;
   QFileIconProvider _iconProvider;
   QDir _root;

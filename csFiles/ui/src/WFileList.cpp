@@ -106,6 +106,11 @@ QStringList WFileList::files() const
   return _model->files();
 }
 
+QString WFileList::rootPath() const
+{
+  return _model->rootPath();
+}
+
 ////// public slots //////////////////////////////////////////////////////////
 
 void WFileList::appendFiles(const QStringList& files)
