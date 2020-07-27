@@ -58,6 +58,7 @@ public:
   bool hasNextLine() const;
   TextLine nextLine(const bool keepEnding = true, bool *ok = nullptr);
 
+  // NOTE: TextBuffer takes ownership of 'device'!
   static TextBufferPtr create(QFileDevice *device);
 
 private:

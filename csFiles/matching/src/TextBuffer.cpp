@@ -118,6 +118,7 @@ TextBufferPtr TextBuffer::create(QFileDevice *device)
 {
   TextBufferPtr result(new TextBuffer(device));
   if( !result->isValid() ) {
+    delete device;
     result.reset();
   }
   return result;
