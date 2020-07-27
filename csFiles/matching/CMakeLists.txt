@@ -42,6 +42,5 @@ target_include_directories(matching
   )
 
 target_link_libraries(matching
-  PRIVATE csUtil Qt5::Core
-  PUBLIC  pcre2-8
+  PUBLIC csUtil pcre2-8 Qt5::Core
   )
