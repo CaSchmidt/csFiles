@@ -68,6 +68,7 @@ private:
   uint32_t matchOptions() const;
   void resetError();
   void resetMatch();
+  void storeMatch();
 
   pcre2_compile_context_8 *_ccontext{nullptr};
   int _errcode{0};

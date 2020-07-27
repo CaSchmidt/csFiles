@@ -149,12 +149,7 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
   if(        rc < 0 ) {
     _errcode = rc;
   } else if( rc > 0 ) {
-    std::size_t *output = pcre2_get_ovector_pointer_8(_mdata);
-    if( output[0] <= output[1] ) {
-      const int  start = static_cast<int>(output[0]);
-      const int length = static_cast<int>(output[1] - output[0]);
-      _match.emplace_back(start, length);
-    }
+    storeMatch();
   }
 
   return rc > 0;
@@ -222,4 +217,15 @@ void Pcre2Matcher::resetError()
 void Pcre2Matcher::resetMatch()
 {
   _match.clear();
+}
+
+void Pcre2Matcher::storeMatch()
+{
+  std::size_t *output = pcre2_get_ovector_pointer_8(_mdata);
+  if( output[0] > output[1] ) {
+    return;
+  }
+  const int  start = static_cast<int>(output[0]);
+  const int length = static_cast<int>(output[1] - output[0]);
+  _match.emplace_back(start, length);
 }
