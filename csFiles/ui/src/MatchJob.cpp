@@ -42,20 +42,38 @@
 
 namespace priv {
 
+  void printText(const MatchJob& job, const QString& text)
+  {
+    if( job.logger == nullptr ) {
+      return;
+    }
+    const QString s = QStringLiteral("%1: %s").arg(job.filename).arg(text);
+    job.logger->logText(s.toStdString());
+  }
+
   void printWarning(const MatchJob& job, const QString& warning)
   {
+    if( job.logger == nullptr ) {
+      return;
+    }
     const QString s = QStringLiteral("WARNING:%1: %2").arg(job.filename).arg(warning);
     job.logger->logWarning(s.toStdString());
   }
 
   void printError(const MatchJob& job, const QString& error)
   {
+    if( job.logger == nullptr ) {
+      return;
+    }
     const QString s = QStringLiteral("ERROR:%1: %2").arg(job.filename).arg(error);
     job.logger->logError(s.toStdString());
   }
 
   void printError(const MatchJob& job, const int lineno, const QString& error)
   {
+    if( job.logger == nullptr ) {
+      return;
+    }
     const QString s = QStringLiteral("ERROR:%1:%2: %3").arg(job.filename).arg(lineno).arg(error);
     job.logger->logError(s.toStdString());
   }
@@ -157,6 +175,8 @@ MatchResult executeJob(const MatchJob& job)
 
     result.lines.push_back(line);
   }
+
+  priv::printText(job, QStringLiteral("Done!"));
 
   return result;
 }
