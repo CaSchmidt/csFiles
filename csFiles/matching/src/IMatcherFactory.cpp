@@ -33,6 +33,11 @@
 
 ////// Public ////////////////////////////////////////////////////////////////
 
+IMatcherPtr createDefaultMatcher()
+{
+  return createPcre2Matcher();
+}
+
 IMatcherPtr createPcre2Matcher()
 {
   return Pcre2Matcher::create();

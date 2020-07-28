@@ -82,6 +82,8 @@ private:
   std::string _pattern{};
 };
 
+IMatcherPtr createDefaultMatcher();
+
 IMatcherPtr createPcre2Matcher();
 
 #endif // IMATCHER_H
