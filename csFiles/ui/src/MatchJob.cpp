@@ -47,7 +47,7 @@ namespace priv {
     if( job.logger == nullptr ) {
       return;
     }
-    const QString s = QStringLiteral("%1: %s").arg(job.filename).arg(text);
+    const QString s = QStringLiteral("%1: %2").arg(job.filename).arg(text);
     job.logger->logText(s.toStdString());
   }
 
@@ -82,6 +82,11 @@ namespace priv {
 
 ////// public ////////////////////////////////////////////////////////////////
 
+MatchJob::MatchJob(const QString& _filename) noexcept
+  : filename{_filename}
+{
+}
+
 bool Line::assign(const TextLine& text, const int lineno, const MatchList& matches)
 {
   if( diff(text) < 1  ||  lineno < 1  ||  matches.empty() ) {
@@ -105,6 +110,11 @@ bool Line::assign(const TextLine& text, const int lineno, const MatchList& match
 MatchResult::MatchResult(const MatchJob& job) noexcept
   : filename{job.filename}
 {
+}
+
+bool MatchResult::isEmpty() const
+{
+  return lines.isEmpty();
 }
 
 ////// Public ////////////////////////////////////////////////////////////////

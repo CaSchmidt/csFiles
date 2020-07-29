@@ -42,13 +42,16 @@ class csILogger;
 
 struct MatchJob {
   MatchJob() noexcept = default;
+  MatchJob(const QString& _filename) noexcept;
 
-  QString    filename{};
-  bool       ignoreCase{false};
-  csILogger *logger{nullptr};
-  bool       matchRegExp{false};
-  QString    pattern{};
+  QString filename{};
+  bool    ignoreCase{false};
+  const csILogger *logger{nullptr};
+  bool    matchRegExp{false};
+  QString pattern{};
 };
+
+using MatchJobs = QList<MatchJob>;
 
 struct Line {
   Line() noexcept = default;
@@ -64,12 +67,10 @@ struct Line {
 using Lines = QList<Line>;
 
 struct MatchResult {
+  MatchResult() noexcept = default;
   MatchResult(const MatchJob& job) noexcept;
 
-  inline bool isEmpty() const
-  {
-    return lines.isEmpty();
-  }
+  bool isEmpty() const;
 
   QString filename{};
   Lines   lines{};
