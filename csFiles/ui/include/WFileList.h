@@ -60,6 +60,8 @@ public:
   QString selectionFilter() const;
   void setSelectionFilter(const QString& filter);
 
+  int count() const;
+
   QStringList files() const;
 
   QString rootPath() const;

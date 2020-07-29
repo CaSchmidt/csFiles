@@ -101,6 +101,11 @@ void WFileList::setSelectionFilter(const QString& filter)
   emit selectionFilterChanged(_selectionFilter);
 }
 
+int WFileList::count() const
+{
+  return _model->rowCount();
+}
+
 QStringList WFileList::files() const
 {
   return _model->files();
