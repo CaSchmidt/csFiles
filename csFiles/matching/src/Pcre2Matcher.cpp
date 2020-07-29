@@ -152,7 +152,7 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
     storeMatch();
   }
 
-  return rc > 0;
+  return hasMatch();
 }
 
 ////// private ///////////////////////////////////////////////////////////////

@@ -52,6 +52,8 @@ private slots:
   void setTabLabel(const QString& text);
 
 private:
+  bool tryCompile();
+
   Ui::WGrep *ui{nullptr};
 };
 

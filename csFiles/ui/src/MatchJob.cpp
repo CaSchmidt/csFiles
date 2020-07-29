@@ -131,7 +131,9 @@ MatchResult executeJob(const MatchJob& job)
 
   matcher->compile(job.pattern.toStdString());
   if( !matcher->isCompiled() ) {
-    priv::printError(job, QStringLiteral("Invalid pattern \"%1\"!").arg(job.pattern));
+    priv::printError(job, QStringLiteral("Invalid pattern \"%1\"! (%2)")
+                     .arg(job.pattern)
+                     .arg(QString::fromStdString(matcher->error())));
     return result;
   }
 

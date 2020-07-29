@@ -83,36 +83,21 @@ WGrep::~WGrep()
 
 void WGrep::executeGrep()
 {
-  if( ui->patternEdit->text().isEmpty()  ||  ui->filesWidget->count() < 1 ) {
-    return;
-  }
-
-  IMatcherPtr matcher = createDefaultMatcher();
-  if( !matcher ) {
-    QMessageBox::critical(this, tr("Error"), tr("Creation of matcher failed!"),
-                          QMessageBox::Ok, QMessageBox::Ok);
-    return;
-  }
-
-  matcher->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
-  matcher->setMatchRegExp(ui->matchRegExpCheck->isChecked());
-
-  if( !matcher->compile(ui->patternEdit->text().toStdString()) ) {
-    const QString error = QString::fromStdString(matcher->error());
-    QMessageBox::critical(this, tr("Error"), error,
-                          QMessageBox::Ok, QMessageBox::Ok);
+  if( ui->filesWidget->count() < 1  ||  !tryCompile() ) {
     return;
   }
 
   WProgressLogger d(this);
-  QFutureWatcher<MatchResult> watcher;
-  d.setFutureWatcher(&watcher);
+  d.setWindowTitle(tr("Executing grep..."));
 
   MatchJobs jobs;
   const QStringList files = ui->filesWidget->files();
   for(const QString& filename : files) {
     jobs.push_back(priv::makeJob(filename, d.logger(), ui));
   }
+
+  QFutureWatcher<MatchResult> watcher;
+  d.setFutureWatcher(&watcher);
 
   QFuture<MatchResult> future = QtConcurrent::mapped(jobs, executeJob);
   watcher.setFuture(future);
@@ -129,4 +114,32 @@ void WGrep::setTabLabel(const QString& text)
     const QString label(QStringLiteral("%1 - [ %2 ]").arg(baseLabel).arg(text));
     emit tabLabelChanged(label);
   }
+}
+
+////// private ///////////////////////////////////////////////////////////////
+
+bool WGrep::tryCompile()
+{
+  if( ui->patternEdit->text().isEmpty() ) {
+    return false;
+  }
+
+  IMatcherPtr matcher = createDefaultMatcher();
+  if( !matcher ) {
+    QMessageBox::critical(this, tr("Error"), tr("Creation of matcher failed!"),
+                          QMessageBox::Ok, QMessageBox::Ok);
+    return false;
+  }
+
+  matcher->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
+  matcher->setMatchRegExp(ui->matchRegExpCheck->isChecked());
+
+  if( !matcher->compile(ui->patternEdit->text().toStdString()) ) {
+    const QString error = QString::fromStdString(matcher->error());
+    QMessageBox::critical(this, tr("Error"), error,
+                          QMessageBox::Ok, QMessageBox::Ok);
+    return false;
+  }
+
+  return true;
 }
