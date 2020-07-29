@@ -29,8 +29,32 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtConcurrent/QtConcurrentMap>
+#include <QtWidgets/QMessageBox>
+
+#include "MatchJob.h"
+#include "WProgressLogger.h"
+
 #include "WGrep.h"
 #include "ui_WGrep.h"
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  MatchJob makeJob(const QString& filename, const csILogger *logger, const Ui::WGrep *ui)
+  {
+    MatchJob job{filename};
+
+    job.ignoreCase  = ui->ignoreCaseCheck->isChecked();
+    job.logger      = logger;
+    job.matchRegExp = ui->matchRegExpCheck->isChecked();
+    job.pattern     = ui->patternEdit->text();
+
+    return job;
+  }
+
+} // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -46,6 +70,7 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 
   // Signals & Slots /////////////////////////////////////////////////////////
 
+  connect(ui->grepButton, &QPushButton::clicked, this, &WGrep::executeGrep);
   connect(ui->patternEdit, &QLineEdit::textChanged, this, &WGrep::setTabLabel);
 }
 
@@ -55,6 +80,45 @@ WGrep::~WGrep()
 }
 
 ////// private slots /////////////////////////////////////////////////////////
+
+void WGrep::executeGrep()
+{
+  if( ui->patternEdit->text().isEmpty()  ||  ui->filesWidget->count() < 1 ) {
+    return;
+  }
+
+  IMatcherPtr matcher = createDefaultMatcher();
+  if( !matcher ) {
+    QMessageBox::critical(this, tr("Error"), tr("Creation of matcher failed!"),
+                          QMessageBox::Ok, QMessageBox::Ok);
+    return;
+  }
+
+  matcher->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
+  matcher->setMatchRegExp(ui->matchRegExpCheck->isChecked());
+
+  if( !matcher->compile(ui->patternEdit->text().toStdString()) ) {
+    const QString error = QString::fromStdString(matcher->error());
+    QMessageBox::critical(this, tr("Error"), error,
+                          QMessageBox::Ok, QMessageBox::Ok);
+    return;
+  }
+
+  WProgressLogger d(this);
+  QFutureWatcher<MatchResult> watcher;
+  d.setFutureWatcher(&watcher);
+
+  MatchJobs jobs;
+  const QStringList files = ui->filesWidget->files();
+  for(const QString& filename : files) {
+    jobs.push_back(priv::makeJob(filename, d.logger(), ui));
+  }
+
+  QFuture<MatchResult> future = QtConcurrent::mapped(jobs, executeJob);
+  watcher.setFuture(future);
+
+  d.exec();
+}
 
 void WGrep::setTabLabel(const QString& text)
 {

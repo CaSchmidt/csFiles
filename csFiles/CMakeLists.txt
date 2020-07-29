@@ -11,6 +11,7 @@ include(FormatOutputName)
 
 ### Dependencies #############################################################
 
+find_package(Qt5Concurrent 5.6 REQUIRED)
 find_package(Qt5Widgets 5.6 REQUIRED)
 
 add_subdirectory(../csQt/csQt

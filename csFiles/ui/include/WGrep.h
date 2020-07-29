@@ -48,6 +48,7 @@ signals:
   void tabLabelChanged(const QString&);
 
 private slots:
+  void executeGrep();
   void setTabLabel(const QString& text);
 
 private:
