@@ -49,7 +49,7 @@ signals:
 
 private slots:
   void browse();
-  void find();
+  void executeFind();
   void setTabLabel(const QString& text);
 
 private:

@@ -58,7 +58,7 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
 
   connect(ui->browseButton, &QPushButton::clicked, this, &WFind::browse);
   connect(ui->dirEdit, &QLineEdit::textChanged, this, &WFind::setTabLabel);
-  connect(ui->findButton, &QPushButton::clicked, this, &WFind::find);
+  connect(ui->findButton, &QPushButton::clicked, this, &WFind::executeFind);
 }
 
 WFind::~WFind()
@@ -79,7 +79,7 @@ void WFind::browse()
   QDir::setCurrent(path);
 }
 
-void WFind::find()
+void WFind::executeFind()
 {
   if( ui->dirEdit->text().isEmpty() ) {
     return;
