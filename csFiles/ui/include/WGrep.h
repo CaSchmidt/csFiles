@@ -32,20 +32,19 @@
 #ifndef WGREP_H
 #define WGREP_H
 
-#include <QtWidgets/QWidget>
+#include "ITabWidget.h"
 
 namespace Ui {
   class WGrep;
 } // namespace Ui
 
-class WGrep : public QWidget {
+class WGrep : public ITabWidget {
   Q_OBJECT
 public:
   WGrep(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WGrep();
 
-signals:
-  void tabLabelChanged(const QString&);
+  QString tabLabelBase() const;
 
 private slots:
   void executeGrep();

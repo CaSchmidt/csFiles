@@ -9,6 +9,7 @@ list(APPEND ui_FORMS
 
 list(APPEND ui_HEADERS
   include/FilesModel.h
+  include/ITabWidget.h
   include/MatchJob.h
   include/WFileList.h
   include/WFind.h
@@ -19,6 +20,7 @@ list(APPEND ui_HEADERS
 
 list(APPEND ui_SOURCES
   src/FilesModel.cpp
+  src/ITabWidget.cpp
   src/MatchJob.cpp
   src/WFileList.cpp
   src/WFind.cpp

@@ -44,7 +44,7 @@ constexpr int kMaxTabLabel = 32;
 ////// public ////////////////////////////////////////////////////////////////
 
 WFind::WFind(QWidget *parent, Qt::WindowFlags f)
-  : QWidget(parent, f)
+  : ITabWidget(parent, f)
   , ui(new Ui::WFind)
 {
   ui->setupUi(this);
@@ -64,6 +64,11 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
 WFind::~WFind()
 {
   delete ui;
+}
+
+QString WFind::tabLabelBase() const
+{
+  return tr("find");
 }
 
 ////// private slots /////////////////////////////////////////////////////////
@@ -113,9 +118,8 @@ void WFind::executeFind()
 
 void WFind::setTabLabel(const QString& text)
 {
-  const QString baseLabel(tr("find"));
   if( text.isEmpty() ) {
-    emit tabLabelChanged(baseLabel);
+    emit tabLabelChanged(tabLabelBase());
   } else {
     QString path(text);
     if( path.size() > kMaxTabLabel ) {
@@ -125,6 +129,6 @@ void WFind::setTabLabel(const QString& text)
         path.insert(0, QString::fromUtf8("…"));
       }
     }
-    emit tabLabelChanged(QStringLiteral("%1 - [ %2 ]").arg(baseLabel).arg(path));
+    emit tabLabelChanged(QStringLiteral("%1 - [ %2 ]").arg(tabLabelBase()).arg(path));
   }
 }

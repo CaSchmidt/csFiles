@@ -32,20 +32,19 @@
 #ifndef WFIND_H
 #define WFIND_H
 
-#include <QtWidgets/QWidget>
+#include "ITabWidget.h"
 
 namespace Ui {
   class WFind;
 } // namespace Ui
 
-class WFind : public QWidget {
+class WFind : public ITabWidget {
   Q_OBJECT
 public:
   WFind(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WFind();
 
-signals:
-  void tabLabelChanged(const QString&);
+  QString tabLabelBase() const;
 
 private slots:
   void browse();

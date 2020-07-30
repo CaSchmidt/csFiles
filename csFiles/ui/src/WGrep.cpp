@@ -59,7 +59,7 @@ namespace priv {
 ////// public ////////////////////////////////////////////////////////////////
 
 WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
-  : QWidget(parent, f)
+  : ITabWidget(parent, f)
   , ui{new Ui::WGrep}
 {
   ui->setupUi(this);
@@ -77,6 +77,11 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 WGrep::~WGrep()
 {
   delete ui;
+}
+
+QString WGrep::tabLabelBase() const
+{
+  return tr("grep");
 }
 
 ////// private slots /////////////////////////////////////////////////////////
@@ -107,11 +112,10 @@ void WGrep::executeGrep()
 
 void WGrep::setTabLabel(const QString& text)
 {
-  const QString baseLabel(tr("grep"));
   if( text.isEmpty() ) {
-    emit tabLabelChanged(baseLabel);
+    emit tabLabelChanged(tabLabelBase());
   } else {
-    const QString label(QStringLiteral("%1 - [ %2 ]").arg(baseLabel).arg(text));
+    const QString label(QStringLiteral("%1 - [ %2 ]").arg(tabLabelBase()).arg(text));
     emit tabLabelChanged(label);
   }
 }

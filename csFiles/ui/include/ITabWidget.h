@@ -29,35 +29,24 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WMAINWINDOW_H
-#define WMAINWINDOW_H
+#ifndef ITABWIDGET_H
+#define ITABWIDGET_H
 
-#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QWidget>
 
-class ITabWidget;
-
-namespace Ui {
-  class WMainWindow;
-} // namespace Ui
-
-class WMainWindow : public QMainWindow {
+class ITabWidget : public QWidget {
   Q_OBJECT
 public:
-  WMainWindow(QWidget *parent = nullptr, Qt::WindowFlags flags = Qt::WindowFlags());
-  ~WMainWindow();
+  ITabWidget(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
+  ~ITabWidget();
 
-private slots:
-  void closeAllTabs();
-  void closeTab();
-  void newFindTab();
-  void newGrepTab();
-  void removeTab(int index);
-  void setTabLabel(const QString& text);
+  virtual QString tabLabelBase() const = 0;
 
-private:
-  void addTabWidget(ITabWidget *tabWidget);
+protected slots:
+  virtual void setTabLabel(const QString& label) = 0;
 
-  Ui::WMainWindow *ui{nullptr};
+signals:
+  void tabLabelChanged(const QString&);
 };
 
-#endif // WMAINWINDOW_H
+#endif // ITABWIDGET_H

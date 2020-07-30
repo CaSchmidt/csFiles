@@ -81,18 +81,12 @@ void WMainWindow::closeTab()
 
 void WMainWindow::newFindTab()
 {
-  WFind *find = new WFind;
-  connect(find, &WFind::tabLabelChanged, this, &WMainWindow::setTabLabel);
-  const int index = ui->tabWidget->addTab(find, tr("find"));
-  ui->tabWidget->setCurrentIndex(index);
+  addTabWidget(new WFind);
 }
 
 void WMainWindow::newGrepTab()
 {
-  WGrep *grep = new WGrep;
-  connect(grep, &WGrep::tabLabelChanged, this, &WMainWindow::setTabLabel);
-  const int index = ui->tabWidget->addTab(grep, tr("grep"));
-  ui->tabWidget->setCurrentIndex(index);
+  addTabWidget(new WGrep);
 }
 
 void WMainWindow::removeTab(int index)
@@ -112,4 +106,16 @@ void WMainWindow::setTabLabel(const QString& text)
     return;
   }
   ui->tabWidget->setTabText(index, text);
+}
+
+////// private ///////////////////////////////////////////////////////////////
+
+void WMainWindow::addTabWidget(ITabWidget *tabWidget)
+{
+  if( tabWidget == nullptr ) {
+    return;
+  }
+  connect(tabWidget, &ITabWidget::tabLabelChanged, this, &WMainWindow::setTabLabel);
+  const int index = ui->tabWidget->addTab(tabWidget, tabWidget->tabLabelBase());
+  ui->tabWidget->setCurrentIndex(index);
 }

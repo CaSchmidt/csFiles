@@ -81,7 +81,7 @@
   </action>
   <action name="newFindAction">
    <property name="text">
-    <string>New &amp;Find</string>
+    <string>New &amp;find</string>
    </property>
    <property name="shortcut">
     <string>Ctrl+Shift+F</string>
