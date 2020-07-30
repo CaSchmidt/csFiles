@@ -31,10 +31,24 @@
 
 #include <QtWidgets/QPushButton>
 
-#include <csQt/csDialogButtonBox.h>
-
 #include "WProgressLogger.h"
 #include "ui_WProgressLogger.h"
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  bool removeAllButtons(QDialogButtonBox *box)
+  {
+    QList<QAbstractButton*> buttons = box->buttons();
+    for(QAbstractButton *button : buttons) {
+      box->removeButton(button);
+      delete button;
+    }
+    return box->buttons().isEmpty();
+  }
+
+} // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -46,21 +60,23 @@ WProgressLogger::WProgressLogger(QWidget *parent, Qt::WindowFlags f)
 
   // User Interface //////////////////////////////////////////////////////////
 
-  csRemoveAllButtons(ui->buttonBox);
+  priv::removeAllButtons(ui->buttonBox);
 
   ui->buttonBox->addButton(QDialogButtonBox::Cancel);
   QPushButton *cancel = ui->buttonBox->button(QDialogButtonBox::Cancel);
+  if( cancel != nullptr ) {
+    cancel->disconnect();
 
-  csRemoveDefaults(ui->buttonBox, true);
-
-  // Signals & Slots /////////////////////////////////////////////////////////
-
-  if( cancel != nullptr ) {    
     connect(cancel, &QPushButton::clicked, this, &WProgressLogger::canceled);
 
     connect(cancel, &QPushButton::clicked, this, &WProgressLogger::rejected);
     connect(cancel, &QPushButton::clicked, this, &WProgressLogger::reject);
+
+    cancel->setAutoDefault(false);
+    cancel->setDefault(false);
   }
+
+  // Signals & Slots /////////////////////////////////////////////////////////
 
   connect(ui->progressBar, &QProgressBar::valueChanged, this, &WProgressLogger::valueChanged);
 }
@@ -89,7 +105,7 @@ int WProgressLogger::minimum() const
 
 void WProgressLogger::finish()
 {
-  csRemoveAllButtons(ui->buttonBox);
+  priv::removeAllButtons(ui->buttonBox);
 
   ui->buttonBox->addButton(QDialogButtonBox::Close);
   QPushButton *close = ui->buttonBox->button(QDialogButtonBox::Close);
