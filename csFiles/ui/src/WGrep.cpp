@@ -92,22 +92,23 @@ void WGrep::executeGrep()
     return;
   }
 
-  WProgressLogger d(this);
-  d.setWindowTitle(tr("Executing grep..."));
+  WProgressLogger dialog(this);
+  dialog.setWindowTitle(tr("Executing grep..."));
 
   MatchJobs jobs;
   const QStringList files = ui->filesWidget->files();
   for(const QString& filename : files) {
-    jobs.push_back(priv::makeJob(filename, d.logger(), ui));
+    jobs.push_back(priv::makeJob(filename, dialog.logger(), ui));
   }
 
   QFutureWatcher<MatchResult> watcher;
-  d.setFutureWatcher(&watcher);
+  dialog.setFutureWatcher(&watcher);
 
   QFuture<MatchResult> future = QtConcurrent::mapped(jobs, executeJob);
   watcher.setFuture(future);
 
-  d.exec();
+  dialog.exec();
+  future.waitForFinished();
 }
 
 void WGrep::setTabLabel(const QString& text)
