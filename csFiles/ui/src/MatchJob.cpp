@@ -56,7 +56,7 @@ namespace priv {
     if( job.logger == nullptr ) {
       return;
     }
-    const QString s = QStringLiteral("WARNING:%1: %2").arg(job.filename).arg(warning);
+    const QString s = QStringLiteral("%1: %2").arg(job.filename).arg(warning);
     job.logger->logWarning(s.toStdString());
   }
 
@@ -65,7 +65,7 @@ namespace priv {
     if( job.logger == nullptr ) {
       return;
     }
-    const QString s = QStringLiteral("ERROR:%1: %2").arg(job.filename).arg(error);
+    const QString s = QStringLiteral("%1: %2").arg(job.filename).arg(error);
     job.logger->logError(s.toStdString());
   }
 
@@ -74,7 +74,7 @@ namespace priv {
     if( job.logger == nullptr ) {
       return;
     }
-    const QString s = QStringLiteral("ERROR:%1:%2: %3").arg(job.filename).arg(lineno).arg(error);
+    const QString s = QStringLiteral("%1:%2: %3").arg(job.filename).arg(lineno).arg(error);
     job.logger->logError(s.toStdString());
   }
 
@@ -142,6 +142,9 @@ MatchResult executeJob(const MatchJob& job)
     priv::printError(job, QStringLiteral("Creation of IMatcher failed!"));
     return result;
   }
+
+  matcher->setIgnoreCase(job.ignoreCase);
+  matcher->setMatchRegExp(job.matchRegExp);
 
   matcher->compile(job.pattern.toStdString());
   if( !matcher->isCompiled() ) {
