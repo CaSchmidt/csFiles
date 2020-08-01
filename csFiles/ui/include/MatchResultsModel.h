@@ -29,34 +29,42 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef WGREP_H
-#define WGREP_H
+#ifndef MATCHRESULTSMODEL_H
+#define MATCHRESULTSMODEL_H
 
-#include "ITabWidget.h"
+#include <csQt/csAbstractTreeItem.h>
 
-class csTreeModel;
+#include "MatchJob.h"
 
-namespace Ui {
-  class WGrep;
-} // namespace Ui
-
-class WGrep : public ITabWidget {
-  Q_OBJECT
+class MatchResultsRoot : public csAbstractTreeItem {
 public:
-  WGrep(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
-  ~WGrep();
+  MatchResultsRoot(csAbstractTreeItem *parent = nullptr);
+  ~MatchResultsRoot() = default;
 
-  QString tabLabelBase() const;
-
-private slots:
-  void executeGrep();
-  void setTabLabel(const QString& text);
-
-private:
-  bool tryCompile();
-
-  Ui::WGrep *ui{nullptr};
-  csTreeModel *_resultsModel{nullptr};
+  int columnCount() const;
+  QVariant data(int column, int role) const;
 };
 
-#endif // WGREP_H
+class MatchResultsFile : public MatchResultsRoot {
+public:
+  MatchResultsFile(const QString& filename, MatchResultsRoot *parent);
+  ~MatchResultsFile() = default;
+
+  QVariant data(int column, int role) const;
+
+private:
+  QString _filename;
+};
+
+class MatchResultsLine : public MatchResultsRoot {
+public:
+  MatchResultsLine(const MatchedLine& line, MatchResultsFile *parent);
+  ~MatchResultsLine() = default;
+
+  QVariant data(int column, int role) const;
+
+private:
+  MatchedLine _line;
+};
+
+#endif // MATCHRESULTSMODEL_H

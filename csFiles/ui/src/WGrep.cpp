@@ -29,10 +29,15 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <algorithm>
+
 #include <QtConcurrent/QtConcurrentMap>
 #include <QtWidgets/QMessageBox>
 
+#include <csQt/csTreeModel.h>
+
 #include "MatchJob.h"
+#include "MatchResultsModel.h"
 #include "WProgressLogger.h"
 
 #include "WGrep.h"
@@ -54,6 +59,50 @@ namespace priv {
     return job;
   }
 
+  void prepareResults(MatchResults& results)
+  {
+    // (1.1) Remove results without any matched lines ////////////////////////
+
+    MatchResults::iterator last =
+        std::remove_if(results.begin(), results.end(),
+                       [](const MatchResult& r) -> bool {
+      return r.isEmpty();
+    });
+
+    // (1.2) Remove range of "empty" results /////////////////////////////////
+
+    results.erase(last, results.end());
+
+    // (2) Sort results by filename //////////////////////////////////////////
+
+    std::sort(results.begin(), results.end());
+
+    // (3) Sort lines of each result /////////////////////////////////////////
+
+    std::for_each(results.begin(), results.end(), [](MatchResult& r) -> void {
+      std::sort(r.lines.begin(), r.lines.end());
+    });
+  }
+
+  MatchResultsRoot *makeResults(MatchResults results)
+  {
+    prepareResults(results);
+
+    MatchResultsRoot *root = new MatchResultsRoot;
+
+    for(const MatchResult& result : results) {
+      MatchResultsFile *file = new MatchResultsFile(result.filename, root);
+      root->appendChild(file);
+
+      for(const MatchedLine& mline : result.lines) {
+        MatchResultsLine *line = new MatchResultsLine(mline, file);
+        file->appendChild(line);
+      }
+    }
+
+    return root;
+  }
+
 } // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -67,6 +116,11 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
   // User Interface //////////////////////////////////////////////////////////
 
   ui->filesWidget->setAutoRoot(true);
+
+  // Results Model ///////////////////////////////////////////////////////////
+
+  _resultsModel = new csTreeModel(new MatchResultsRoot, this);
+  ui->resultsView->setModel(_resultsModel);
 
   // Signals & Slots /////////////////////////////////////////////////////////
 
@@ -109,6 +163,8 @@ void WGrep::executeGrep()
 
   dialog.exec();
   future.waitForFinished();
+
+  _resultsModel->setRoot(priv::makeResults(future.results()));
 }
 
 void WGrep::setTabLabel(const QString& text)
