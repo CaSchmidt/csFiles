@@ -29,57 +29,51 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef MATCHRESULTSMODEL_H
-#define MATCHRESULTSMODEL_H
+#include <QtWidgets/QAbstractItemView>
 
-#include <QtCore/QDir>
+#include <csQt/csQtUtil.h>
+#include <QtCreator/HighlightingItemDelegate.h>
 
-#include <csQt/csAbstractTreeItem.h>
+#include "ResultsProxyDelegate.h"
 
-#include "MatchJob.h"
+////// Constants /////////////////////////////////////////////////////////////
 
-class MatchResultsItem : public csAbstractTreeItem {
-public:
-  MatchResultsItem(csAbstractTreeItem *parent = nullptr);
-  ~MatchResultsItem() = default;
+constexpr int kIndexDepth = 1;
+constexpr int kTabWidth = 8;
 
-  int columnCount() const;
-};
+////// public ////////////////////////////////////////////////////////////////
 
-class MatchResultsRoot : public MatchResultsItem {
-public:
-  MatchResultsRoot(const QString& rootPath);
-  ~MatchResultsRoot() = default;
+ResultsProxyDelegate::ResultsProxyDelegate(QAbstractItemView *view)
+  : QAbstractItemDelegate(view)
+{
+  _delegate  = view->itemDelegate();
+  _highlight = new QtCreator::HighlightingItemDelegate(kTabWidth, view);
 
-  QVariant data(int column, int role) const;
+  view->setItemDelegate(this);
+}
 
-  QString displayFilename(const QString& filename) const;
+ResultsProxyDelegate::~ResultsProxyDelegate()
+{
+}
 
-private:
-  QDir _root;
-  QString _rootPath;
-};
+void ResultsProxyDelegate::paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+  if( csIndexDepth(index) == kIndexDepth ) {
+    _highlight->paint(painter, option, index);
+  } else {
+    _delegate->paint(painter, option, index);
+  }
+}
 
-class MatchResultsFile : public MatchResultsItem {
-public:
-  MatchResultsFile(const QString& filename, MatchResultsRoot *parent);
-  ~MatchResultsFile() = default;
+QSize ResultsProxyDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const
+{
+  if( csIndexDepth(index) == kIndexDepth ) {
+    return _highlight->sizeHint(option, index);
+  }
+  return _delegate->sizeHint(option, index);
+}
 
-  QVariant data(int column, int role) const;
-
-private:
-  QString _filename;
-};
-
-class MatchResultsLine : public MatchResultsItem {
-public:
-  MatchResultsLine(const MatchedLine& line, MatchResultsFile *parent);
-  ~MatchResultsLine() = default;
-
-  QVariant data(int column, int role) const;
-
-private:
-  MatchedLine _line;
-};
-
-#endif // MATCHRESULTSMODEL_H
+void ResultsProxyDelegate::setTabWidth(const int width)
+{
+  _highlight->setTabWidth(width);
+}

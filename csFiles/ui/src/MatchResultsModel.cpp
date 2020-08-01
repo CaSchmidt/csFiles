@@ -33,16 +33,27 @@
 
 #include "MatchResultsModel.h"
 
-////// MatchResultsRoot - public /////////////////////////////////////////////
+////// MatchResultsItem - public /////////////////////////////////////////////
 
-MatchResultsRoot::MatchResultsRoot(csAbstractTreeItem *parent)
+MatchResultsItem::MatchResultsItem(csAbstractTreeItem *parent)
   : csAbstractTreeItem(parent)
 {
 }
 
-int MatchResultsRoot::columnCount() const
+int MatchResultsItem::columnCount() const
 {
   return 1;
+}
+
+////// MatchResultsRoot - public /////////////////////////////////////////////
+
+MatchResultsRoot::MatchResultsRoot(const QString& rootPath)
+  : MatchResultsItem(nullptr)
+  , _rootPath(rootPath)
+{
+  if( !_rootPath.isEmpty() ) {
+    _root.setPath(_rootPath);
+  }
 }
 
 QVariant MatchResultsRoot::data(int column, int role) const
@@ -55,18 +66,27 @@ QVariant MatchResultsRoot::data(int column, int role) const
   return QVariant();
 }
 
+QString MatchResultsRoot::displayFilename(const QString& filename) const
+{
+  return !_rootPath.isEmpty()  &&  filename.startsWith(_rootPath)
+      ? _root.relativeFilePath(filename)
+      : filename;
+}
+
 ////// MatchRestulsFile - public /////////////////////////////////////////////
 
 MatchResultsFile::MatchResultsFile(const QString& filename, MatchResultsRoot *parent)
-  : MatchResultsRoot(parent)
+  : MatchResultsItem(parent)
   , _filename(filename)
 {
 }
 
 QVariant MatchResultsFile::data(int column, int role) const
 {
-  if( role == Qt::DisplayRole ) {
-    if( column == 0 ) {
+  if( column == 0 ) {
+    if(        role == Qt::DisplayRole ) {
+      return dynamic_cast<const MatchResultsRoot*>(parentItem())->displayFilename(_filename);
+    } else if( role == Qt::ToolTipRole ) {
       return _filename;
     }
   }
@@ -76,7 +96,7 @@ QVariant MatchResultsFile::data(int column, int role) const
 ////// MatchResultsLine - public /////////////////////////////////////////////
 
 MatchResultsLine::MatchResultsLine(const MatchedLine& line, MatchResultsFile *parent)
-  : MatchResultsRoot(parent)
+  : MatchResultsItem(parent)
   , _line(line)
 {
 }

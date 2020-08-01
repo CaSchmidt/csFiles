@@ -29,57 +29,30 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef MATCHRESULTSMODEL_H
-#define MATCHRESULTSMODEL_H
+#ifndef RESULTSPROXYDELEGATE_H
+#define RESULTSPROXYDELEGATE_H
 
-#include <QtCore/QDir>
+#include <QtWidgets/QAbstractItemDelegate>
 
-#include <csQt/csAbstractTreeItem.h>
+namespace QtCreator {
+  class HighlightingItemDelegate;
+}
+class QAbstractItemView;
 
-#include "MatchJob.h"
-
-class MatchResultsItem : public csAbstractTreeItem {
+class ResultsProxyDelegate : public QAbstractItemDelegate {
+  Q_OBJECT
 public:
-  MatchResultsItem(csAbstractTreeItem *parent = nullptr);
-  ~MatchResultsItem() = default;
+  ResultsProxyDelegate(QAbstractItemView *view);
+  ~ResultsProxyDelegate();
 
-  int columnCount() const;
-};
+  void paint(QPainter *painter, const QStyleOptionViewItem& option, const QModelIndex& index) const;
+  QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
 
-class MatchResultsRoot : public MatchResultsItem {
-public:
-  MatchResultsRoot(const QString& rootPath);
-  ~MatchResultsRoot() = default;
-
-  QVariant data(int column, int role) const;
-
-  QString displayFilename(const QString& filename) const;
+  void setTabWidth(const int width);
 
 private:
-  QDir _root;
-  QString _rootPath;
+  QAbstractItemDelegate *_delegate;
+  QtCreator::HighlightingItemDelegate *_highlight;
 };
 
-class MatchResultsFile : public MatchResultsItem {
-public:
-  MatchResultsFile(const QString& filename, MatchResultsRoot *parent);
-  ~MatchResultsFile() = default;
-
-  QVariant data(int column, int role) const;
-
-private:
-  QString _filename;
-};
-
-class MatchResultsLine : public MatchResultsItem {
-public:
-  MatchResultsLine(const MatchedLine& line, MatchResultsFile *parent);
-  ~MatchResultsLine() = default;
-
-  QVariant data(int column, int role) const;
-
-private:
-  MatchedLine _line;
-};
-
-#endif // MATCHRESULTSMODEL_H
+#endif // RESULTSPROXYDELEGATE_H

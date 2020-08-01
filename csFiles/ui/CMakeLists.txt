@@ -12,6 +12,7 @@ list(APPEND ui_HEADERS
   include/ITabWidget.h
   include/MatchJob.h
   include/MatchResultsModel.h
+  include/ResultsProxyDelegate.h
   include/WFileList.h
   include/WFind.h
   include/WGrep.h
@@ -24,6 +25,7 @@ list(APPEND ui_SOURCES
   src/ITabWidget.cpp
   src/MatchJob.cpp
   src/MatchResultsModel.cpp
+  src/ResultsproxyDelegate.cpp
   src/WFileList.cpp
   src/WFind.cpp
   src/WGrep.cpp

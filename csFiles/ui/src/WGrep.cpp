@@ -36,8 +36,8 @@
 
 #include <csQt/csTreeModel.h>
 
-#include "MatchJob.h"
 #include "MatchResultsModel.h"
+#include "ResultsProxyDelegate.h"
 #include "WProgressLogger.h"
 
 #include "WGrep.h"
@@ -84,11 +84,11 @@ namespace priv {
     });
   }
 
-  MatchResultsRoot *makeResults(MatchResults results)
+  MatchResultsRoot *makeResults(MatchResults results, const QString& rootPath)
   {
     prepareResults(results);
 
-    MatchResultsRoot *root = new MatchResultsRoot;
+    MatchResultsRoot *root = new MatchResultsRoot(rootPath);
 
     for(const MatchResult& result : results) {
       MatchResultsFile *file = new MatchResultsFile(result.filename, root);
@@ -117,9 +117,11 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 
   ui->filesWidget->setAutoRoot(true);
 
+  new ResultsProxyDelegate(ui->resultsView);
+
   // Results Model ///////////////////////////////////////////////////////////
 
-  _resultsModel = new csTreeModel(new MatchResultsRoot, this);
+  _resultsModel = new csTreeModel(new MatchResultsRoot(QString()), this);
   ui->resultsView->setModel(_resultsModel);
 
   // Signals & Slots /////////////////////////////////////////////////////////
@@ -140,11 +142,18 @@ QString WGrep::tabLabelBase() const
 
 ////// private slots /////////////////////////////////////////////////////////
 
+void WGrep::clearResults()
+{
+  _resultsModel->setRoot(new MatchResultsRoot(QString()));
+}
+
 void WGrep::executeGrep()
 {
   if( ui->filesWidget->count() < 1  ||  !tryCompile() ) {
     return;
   }
+
+  clearResults();
 
   WProgressLogger dialog(this);
   dialog.setWindowTitle(tr("Executing grep..."));
@@ -164,7 +173,7 @@ void WGrep::executeGrep()
   dialog.exec();
   future.waitForFinished();
 
-  _resultsModel->setRoot(priv::makeResults(future.results()));
+  _resultsModel->setRoot(priv::makeResults(future.results(), ui->filesWidget->rootPath()));
 }
 
 void WGrep::setTabLabel(const QString& text)

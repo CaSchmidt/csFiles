@@ -49,6 +49,7 @@ public:
   QString tabLabelBase() const;
 
 private slots:
+  void clearResults();
   void executeGrep();
   void setTabLabel(const QString& text);
 
