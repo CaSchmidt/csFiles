@@ -40,6 +40,8 @@
 
 class csILogger;
 
+////// MatchJob //////////////////////////////////////////////////////////////
+
 struct MatchJob {
   MatchJob() noexcept = default;
   MatchJob(const QString& _filename) noexcept;
@@ -53,8 +55,10 @@ struct MatchJob {
 
 using MatchJobs = QList<MatchJob>;
 
-struct Line {
-  Line() noexcept = default;
+////// MatchedLine ///////////////////////////////////////////////////////////
+
+struct MatchedLine {
+  MatchedLine() noexcept = default;
 
   bool assign(const TextLine& text, const int lineno, const MatchList& matches);
 
@@ -64,7 +68,11 @@ struct Line {
   QVector<int> length{};
 };
 
-using Lines = QList<Line>;
+bool operator<(const MatchedLine& a, const MatchedLine& b);
+
+using MatchedLines = QList<MatchedLine>;
+
+////// MatchResult ///////////////////////////////////////////////////////////
 
 struct MatchResult {
   MatchResult() noexcept = default;
@@ -72,9 +80,15 @@ struct MatchResult {
 
   bool isEmpty() const;
 
-  QString filename{};
-  Lines   lines{};
+  QString      filename{};
+  MatchedLines lines{};
 };
+
+bool operator<(const MatchResult& a, const MatchResult& b);
+
+using MatchResults = QList<MatchResult>;
+
+////// Functions /////////////////////////////////////////////////////////////
 
 MatchResult executeJob(const MatchJob& job);
 

@@ -80,20 +80,22 @@ namespace priv {
 
 } // namespace priv
 
-////// public ////////////////////////////////////////////////////////////////
+////// MatchJob - public /////////////////////////////////////////////////////
 
 MatchJob::MatchJob(const QString& _filename) noexcept
   : filename{_filename}
 {
 }
 
-bool Line::assign(const TextLine& text, const int lineno, const MatchList& matches)
+////// MatchedLine - public //////////////////////////////////////////////////
+
+bool MatchedLine::assign(const TextLine& text, const int lineno, const MatchList& matches)
 {
   if( diff(text) < 1  ||  lineno < 1  ||  matches.empty() ) {
     return false;
   }
 
-  Line::text = QString::fromUtf8(text.first, static_cast<int>(diff(text)));
+  MatchedLine::text = QString::fromUtf8(text.first, static_cast<int>(diff(text)));
   number = lineno;
 
   start.reserve(static_cast<int>(matches.size()));
@@ -107,6 +109,13 @@ bool Line::assign(const TextLine& text, const int lineno, const MatchList& match
   return start.size() == static_cast<int>(matches.size())  &&  start.size() == length.size();
 }
 
+bool operator<(const MatchedLine& a, const MatchedLine& b)
+{
+  return a.number < b.number;
+}
+
+////// MatchResult - public //////////////////////////////////////////////////
+
 MatchResult::MatchResult(const MatchJob& job) noexcept
   : filename{job.filename}
 {
@@ -115,6 +124,11 @@ MatchResult::MatchResult(const MatchJob& job) noexcept
 bool MatchResult::isEmpty() const
 {
   return lines.isEmpty();
+}
+
+bool operator<(const MatchResult& a, const MatchResult& b)
+{
+  return a.filename < b.filename;
 }
 
 ////// Public ////////////////////////////////////////////////////////////////
@@ -180,7 +194,7 @@ MatchResult executeJob(const MatchJob& job)
       continue;
     }
 
-    Line line;
+    MatchedLine line;
     if( !line.assign(buffer->info().removeEnding(text), lineno, matcher->getMatch()) ) {
       continue;
     }
