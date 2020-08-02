@@ -216,6 +216,33 @@ bool Pcre2Matcher::initMatchData()
   return _mdata != nullptr  &&  _ovector != nullptr;
 }
 
+bool Pcre2Matcher::isNewlineCrLf() const
+{
+  if( _regexp == nullptr ) {
+    return false;
+  }
+  uint32_t newline = 0;
+  if( pcre2_pattern_info_8(_regexp, PCRE2_INFO_NEWLINE, &newline) != 0 ) {
+    return false;
+  }
+  return
+      newline == PCRE2_NEWLINE_ANY      ||
+      newline == PCRE2_NEWLINE_ANYCRLF  ||
+      newline == PCRE2_NEWLINE_CRLF;
+}
+
+bool Pcre2Matcher::isUtf() const
+{
+  if( _regexp == nullptr ) {
+    return false;
+  }
+  uint32_t options = 0;
+  if( pcre2_pattern_info_8(_regexp, PCRE2_INFO_ALLOPTIONS, &options) != 0 ) {
+    return false;
+  }
+  return (options & PCRE2_UTF) != 0;
+}
+
 bool Pcre2Matcher::isValidMatch() const
 {
   return _ovector != nullptr  &&  _ovector[0] <= _ovector[1];

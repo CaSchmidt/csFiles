@@ -66,6 +66,8 @@ private:
   uint32_t compileOptions() const;
   bool hasCompileContext() const;
   bool initMatchData();
+  bool isNewlineCrLf() const;
+  bool isUtf() const;
   bool isValidMatch() const;
   uint32_t matchOptions() const;
   void resetError();
