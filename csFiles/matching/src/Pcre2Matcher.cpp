@@ -35,7 +35,21 @@
 
 ////// Constants /////////////////////////////////////////////////////////////
 
-constexpr std::size_t kErrorLength = 1024;
+constexpr PCRE2_SIZE kErrorLength = 1024;
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  PCRE2_SIZE skipUtf8(const char *str, const PCRE2_SIZE length, PCRE2_SIZE offset)
+  {
+    while( offset < length  &&  (str[offset] & 0xC0) == 0x80 ) {
+      offset++;
+    }
+    return offset;
+  }
+
+} // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -137,17 +151,18 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
     return false;
   }
 
-  const std::size_t len = first != nullptr  &&  first < last
-      ? static_cast<std::size_t>(last - first)
+  const PCRE2_SIZE length = first != nullptr  &&  first < last
+      ? static_cast<PCRE2_SIZE>(last - first)
       : 0;
-  if( len < 1 ) {
+  if( length < 1 ) {
     return false;
   }
 
-  const int rc = pcre2_match_8(_regexp, reinterpret_cast<PCRE2_SPTR8>(first), len, 0,
+  const int rc = pcre2_match_8(_regexp, reinterpret_cast<PCRE2_SPTR8>(first), length, 0,
                                matchOptions(), _mdata, nullptr);
   if(        rc < 0 ) {
     _errcode = rc;
+    return false;
   } else if( rc > 0 ) {
     storeMatch();
   }
@@ -251,6 +266,63 @@ bool Pcre2Matcher::isValidMatch() const
 uint32_t Pcre2Matcher::matchOptions() const
 {
   return 0;
+}
+
+bool Pcre2Matcher::nextMatches(const char *first, const PCRE2_SIZE length)
+{
+  const bool      is_crlf = isNewlineCrLf();
+  const bool       is_utf = isUtf();
+  const uint32_t options0 = matchOptions();
+  while( true ) {
+    uint32_t  options = options0;
+    PCRE2_SIZE offset = _ovector[1];
+
+    if( _ovector[0] == _ovector[1] ) {
+      if( _ovector[0] == length ) {
+        break;
+      }
+      options |= PCRE2_ANCHORED | PCRE2_NOTEMPTY_ATSTART;
+
+    } else {
+      const PCRE2_SIZE start = pcre2_get_startchar_8(_mdata);
+      if( offset <= start ) {
+        if( start >= length ) {
+          break;
+        }
+        offset = start + 1;
+        if( is_utf ) {
+          offset = priv::skipUtf8(first, length, offset);
+        }
+      }
+
+    }
+
+    const int rc = pcre2_match_8(_regexp, reinterpret_cast<PCRE2_SPTR8>(first), length, offset,
+                                 options, _mdata, nullptr);
+
+    if( rc == PCRE2_ERROR_NOMATCH ) {
+      if( options == options0 ) {
+        break;
+      }
+      _ovector[1] = offset + 1;
+      if( is_crlf  &&  offset < length - 1  &&
+          first[offset] == '\r'  &&  first[offset + 1] == '\n' ) {
+        _ovector[1] += 1;
+      } else if( is_utf ) {
+        _ovector[1] = priv::skipUtf8(first, length, _ovector[1]);
+      }
+      continue;
+    }
+
+    if(        rc < 0 ) {
+      _errcode = rc;
+      return false;
+    } else if( rc > 0 ) {
+      storeMatch();
+    }
+  } // while()
+
+  return hasMatch();
 }
 
 void Pcre2Matcher::resetError()

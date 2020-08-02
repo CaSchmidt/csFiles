@@ -70,6 +70,7 @@ private:
   bool isUtf() const;
   bool isValidMatch() const;
   uint32_t matchOptions() const;
+  bool nextMatches(const char *first, const PCRE2_SIZE length);
   void resetError();
   void resetMatch();
   bool storeMatch();
