@@ -130,9 +130,11 @@ bool Pcre2Matcher::setEndOfLine(const EndOfLine eol)
   } else if( eol == EndOfLine::Lf ) {
     ok = pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_LF) == 0;
   }
+#if 0
   if( ok  &&  isCompiled() ) {
     recompile();
   }
+#endif
   return ok;
 }
 
