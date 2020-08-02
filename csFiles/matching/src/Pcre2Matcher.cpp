@@ -122,14 +122,18 @@ bool Pcre2Matcher::setEndOfLine(const EndOfLine eol)
   if( !hasCompileContext() ) {
     return false;
   }
+  bool ok = false;
   if(        eol == EndOfLine::Cr ) {
-    return pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_CR) == 0;
+    ok = pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_CR) == 0;
   } else if( eol == EndOfLine::CrLf ) {
-    return pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_CRLF) == 0;
+    ok = pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_CRLF) == 0;
   } else if( eol == EndOfLine::Lf ) {
-    return pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_LF) == 0;
+    ok = pcre2_set_newline_8(_ccontext, PCRE2_NEWLINE_LF) == 0;
   }
-  return false;
+  if( ok  &&  isCompiled() ) {
+    recompile();
+  }
+  return ok;
 }
 
 ////// static public /////////////////////////////////////////////////////////

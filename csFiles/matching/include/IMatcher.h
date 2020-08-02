@@ -63,6 +63,8 @@ public:
   bool match(const std::string& str);
   bool match(const char *first, const char *last);
 
+  bool recompile();
+
   bool ignoreCase() const;
   void setIgnoreCase(const bool on);
 

@@ -59,6 +59,11 @@ bool IMatcher::match(const char *first, const char *last)
   return impl_match(first, last);
 }
 
+bool IMatcher::recompile()
+{
+  return compile(pattern());
+}
+
 bool IMatcher::ignoreCase() const
 {
   return _ignoreCase;
