@@ -65,10 +65,12 @@ private:
   void clear(const bool all = false);
   uint32_t compileOptions() const;
   bool hasCompileContext() const;
+  bool initMatchData();
+  bool isValidMatch() const;
   uint32_t matchOptions() const;
   void resetError();
   void resetMatch();
-  void storeMatch();
+  bool storeMatch();
 
   pcre2_compile_context_8 *_ccontext{nullptr};
   int _errcode{0};
@@ -76,6 +78,7 @@ private:
   MatchList _match{};
   pcre2_match_data_8 *_mdata{nullptr};
   pcre2_code_8 *_regexp{nullptr};
+  PCRE2_SIZE *_ovector{nullptr};
 };
 
 #endif // PCRE2MATCHER_H

@@ -57,7 +57,7 @@ bool Pcre2Matcher::compile(const std::string& pattern)
   } else {
     resetError(); // NOTE: pcre2_compile() returns COMPILE_ERROR_BASE == 100 upon success!
   }
-  _mdata = pcre2_match_data_create_from_pattern_8(_regexp, nullptr);
+  initMatchData();
   if( isCompiled() ) {
     setPattern(pattern);
   }
@@ -92,7 +92,7 @@ bool Pcre2Matcher::hasMatch() const
 
 bool Pcre2Matcher::isCompiled() const
 {
-  return hasCompileContext()  &&  _regexp != nullptr  &&  _mdata != nullptr;
+  return hasCompileContext()  &&  _regexp != nullptr  &&  _mdata != nullptr  &&  _ovector != nullptr;
 }
 
 bool Pcre2Matcher::isError() const
@@ -168,6 +168,7 @@ void Pcre2Matcher::clear(const bool all)
   resetMatch();
   resetPattern();
 
+  _ovector = nullptr;
   if( _mdata != nullptr ) {
     pcre2_match_data_free_8(_mdata);
     _mdata = nullptr;
@@ -203,6 +204,23 @@ bool Pcre2Matcher::hasCompileContext() const
   return _ccontext != nullptr;
 }
 
+bool Pcre2Matcher::initMatchData()
+{
+  if( _regexp == nullptr ) {
+    return false;
+  }
+  _mdata = pcre2_match_data_create_from_pattern_8(_regexp, nullptr);
+  if( _mdata != nullptr ) {
+    _ovector = pcre2_get_ovector_pointer_8(_mdata);
+  }
+  return _mdata != nullptr  &&  _ovector != nullptr;
+}
+
+bool Pcre2Matcher::isValidMatch() const
+{
+  return _ovector != nullptr  &&  _ovector[0] <= _ovector[1];
+}
+
 uint32_t Pcre2Matcher::matchOptions() const
 {
   return 0;
@@ -219,13 +237,13 @@ void Pcre2Matcher::resetMatch()
   _match.clear();
 }
 
-void Pcre2Matcher::storeMatch()
+bool Pcre2Matcher::storeMatch()
 {
-  std::size_t *output = pcre2_get_ovector_pointer_8(_mdata);
-  if( output[0] > output[1] ) {
-    return;
+  if( !isValidMatch() ) {
+    return false;
   }
-  const int  start = static_cast<int>(output[0]);
-  const int length = static_cast<int>(output[1] - output[0]);
+  const int  start = static_cast<int>(_ovector[0]);
+  const int length = static_cast<int>(_ovector[1] - _ovector[0]);
   _match.emplace_back(start, length);
+  return true;
 }
