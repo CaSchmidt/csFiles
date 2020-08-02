@@ -64,6 +64,9 @@ bool Pcre2Matcher::compile(const std::string& pattern)
   if( !hasCompileContext() ) {
     return false;
   }
+  if( pattern.empty() ) {
+    return false;
+  }
   _regexp = pcre2_compile_8(reinterpret_cast<PCRE2_SPTR8>(pattern.data()), pattern.size(),
                             compileOptions(), &_errcode, &_erroffset, _ccontext);
   if( _regexp == nullptr ) {
