@@ -141,7 +141,7 @@ bool Pcre2Matcher::setEndOfLine(const EndOfLine eol)
 IMatcherPtr Pcre2Matcher::create()
 {
   IMatcherPtr result{new Pcre2Matcher()};
-  if( !dynamic_cast<Pcre2Matcher*>(result.get())->hasCompileContext() ) {
+  if( result  &&  !dynamic_cast<Pcre2Matcher*>(result.get())->hasCompileContext() ) {
     result.reset();
   }
   return result;
