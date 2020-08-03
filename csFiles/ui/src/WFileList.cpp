@@ -200,6 +200,10 @@ void WFileList::onRemove()
 {
   const QModelIndexList selection = view()->selectionModel()->selectedIndexes();
 
-  const QStringList files = WFileList::files();
+  QStringList files;
+  for(const QModelIndex& index : selection) {
+    files.push_back(_model->data(index, Qt::EditRole).toString());
+  }
+
   _model->remove(files);
 }
