@@ -44,13 +44,12 @@ class csILogger;
 
 struct MatchJob {
   MatchJob() noexcept = default;
+  MatchJob(const MatchJob& other) noexcept;
   MatchJob(const QString& _filename) noexcept;
 
   QString filename{};
-  bool    ignoreCase{false};
   const csILogger *logger{nullptr};
-  bool    matchRegExp{false};
-  QString pattern{};
+  IMatcherPtr matcher{};
 };
 
 using MatchJobs = QList<MatchJob>;

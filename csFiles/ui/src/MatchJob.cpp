@@ -82,6 +82,15 @@ namespace priv {
 
 ////// MatchJob - public /////////////////////////////////////////////////////
 
+MatchJob::MatchJob(const MatchJob& other) noexcept
+  : filename(other.filename)
+  , logger{other.logger}
+{
+  if( other.matcher ) {
+    matcher = other.matcher->clone();
+  }
+}
+
 MatchJob::MatchJob(const QString& _filename) noexcept
   : filename{_filename}
 {
@@ -137,20 +146,8 @@ MatchResult executeJob(const MatchJob& job)
 {
   MatchResult result(job);
 
-  const IMatcherPtr matcher = createDefaultMatcher();
-  if( !matcher ) {
-    priv::printError(job, QStringLiteral("Creation of IMatcher failed!"));
-    return result;
-  }
-
-  matcher->setIgnoreCase(job.ignoreCase);
-  matcher->setMatchRegExp(job.matchRegExp);
-
-  matcher->compile(job.pattern.toStdString());
-  if( !matcher->isCompiled() ) {
-    priv::printError(job, QStringLiteral("Invalid pattern \"%1\"! (%2)")
-                     .arg(job.pattern)
-                     .arg(QString::fromStdString(matcher->error())));
+  if( !job.matcher ) {
+    priv::printError(job, QStringLiteral("No matcher set!"));
     return result;
   }
 
@@ -177,7 +174,7 @@ MatchResult executeJob(const MatchJob& job)
     return result;
   }
 
-  if( !matcher->setEndOfLine(buffer->info().eolType()) ) {
+  if( !job.matcher->setEndOfLine(buffer->info().eolType()) ) {
     priv::printError(job, QStringLiteral("Unable to set EOL type!"));
     return result;
   }
@@ -193,12 +190,12 @@ MatchResult executeJob(const MatchJob& job)
       return result;
     }
 
-    if( !matcher->match(text.first, text.second) ) {
+    if( !job.matcher->match(text.first, text.second) ) {
       continue;
     }
 
     MatchedLine line;
-    if( !line.assign(buffer->info().removeEnding(text), lineno, matcher->getMatch()) ) {
+    if( !line.assign(buffer->info().removeEnding(text), lineno, job.matcher->getMatch()) ) {
       continue;
     }
 

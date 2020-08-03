@@ -47,16 +47,35 @@
 
 namespace priv {
 
-  MatchJob makeJob(const QString& filename, const csILogger *logger, const Ui::WGrep *ui)
+  MatchJob makeJob(const QString& filename, const csILogger *logger, const IMatcherPtr& matcher)
   {
     MatchJob job{filename};
 
-    job.ignoreCase  = ui->ignoreCaseCheck->isChecked();
-    job.logger      = logger;
-    job.matchRegExp = ui->matchRegExpCheck->isChecked();
-    job.pattern     = ui->patternEdit->text();
+    job.logger = logger;
+    if( matcher ) {
+      job.matcher = matcher->clone();
+    }
 
     return job;
+  }
+
+  IMatcherPtr makeMatcher(const Ui::WGrep *ui)
+  {
+    if( ui->patternEdit->text().isEmpty() ) {
+      return IMatcherPtr();
+    }
+
+    IMatcherPtr result = createDefaultMatcher();
+    if( !result ) {
+      return IMatcherPtr();
+    }
+
+    result->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
+    result->setMatchRegExp(ui->matchRegExpCheck->isChecked());
+
+    result->compile(ui->patternEdit->text().toStdString());
+
+    return result;
   }
 
   void prepareResults(MatchResults& results)
@@ -155,13 +174,15 @@ void WGrep::executeGrep()
 
   clearResults();
 
+  IMatcherPtr matcher = priv::makeMatcher(ui);
+
   WProgressLogger dialog(this);
   dialog.setWindowTitle(tr("Executing grep..."));
 
   MatchJobs jobs;
   const QStringList files = ui->filesWidget->files();
   for(const QString& filename : files) {
-    jobs.push_back(priv::makeJob(filename, dialog.logger(), ui));
+    jobs.push_back(priv::makeJob(filename, dialog.logger(), matcher));
   }
 
   QFutureWatcher<MatchResult> watcher;
@@ -194,17 +215,14 @@ bool WGrep::tryCompile()
     return false;
   }
 
-  IMatcherPtr matcher = createDefaultMatcher();
+  IMatcherPtr matcher = priv::makeMatcher(ui);
   if( !matcher ) {
     QMessageBox::critical(this, tr("Error"), tr("Creation of matcher failed!"),
                           QMessageBox::Ok, QMessageBox::Ok);
     return false;
   }
 
-  matcher->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
-  matcher->setMatchRegExp(ui->matchRegExpCheck->isChecked());
-
-  if( !matcher->compile(ui->patternEdit->text().toStdString()) ) {
+  if( !matcher->isCompiled() ) {
     const QString error = QString::fromStdString(matcher->error());
     QMessageBox::critical(this, tr("Error"), error,
                           QMessageBox::Ok, QMessageBox::Ok);
