@@ -40,6 +40,7 @@ class Pcre2Matcher : public IMatcher {
 public:
   ~Pcre2Matcher();
 
+  IMatcherPtr clone() const;
   bool compile(const std::string& pattern);
   std::string error() const;
   MatchList getMatch() const;
@@ -55,6 +56,7 @@ protected:
 
 private:
   Pcre2Matcher();
+  Pcre2Matcher(const Pcre2Matcher *other);
 
   Pcre2Matcher(const Pcre2Matcher&) = delete;
   Pcre2Matcher& operator=(const Pcre2Matcher&) = delete;

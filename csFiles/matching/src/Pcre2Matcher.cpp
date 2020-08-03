@@ -58,6 +58,15 @@ Pcre2Matcher::~Pcre2Matcher()
   clear(true);
 }
 
+IMatcherPtr Pcre2Matcher::clone() const
+{
+  IMatcherPtr result{new Pcre2Matcher(this)};
+  if( result  &&  !result->isCompiled() ) {
+    result.reset();
+  }
+  return result;
+}
+
 bool Pcre2Matcher::compile(const std::string& pattern)
 {
   clear();
@@ -182,8 +191,17 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
 ////// private ///////////////////////////////////////////////////////////////
 
 Pcre2Matcher::Pcre2Matcher()
+  : IMatcher()
 {
   _ccontext = pcre2_compile_context_create_8(nullptr);
+}
+
+Pcre2Matcher::Pcre2Matcher(const Pcre2Matcher *other)
+  : IMatcher(*other)
+{
+  _ccontext = pcre2_compile_context_copy_8(other->_ccontext);
+  _regexp   = pcre2_code_copy_with_tables_8(other->_regexp);
+  initMatchData();
 }
 
 void Pcre2Matcher::clear(const bool all)

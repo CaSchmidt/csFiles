@@ -35,6 +35,10 @@
 
 ////// public ////////////////////////////////////////////////////////////////
 
+IMatcher::IMatcher() = default;
+
+IMatcher::IMatcher(const IMatcher&) = default;
+
 IMatcher::~IMatcher()
 {
 }

@@ -48,8 +48,11 @@ using IMatcherPtr = std::unique_ptr<class IMatcher>;
 
 class IMatcher {
 public:
+  IMatcher();
+  IMatcher(const IMatcher&);
   virtual ~IMatcher();
 
+  virtual IMatcherPtr clone() const = 0;
   virtual bool compile(const std::string& pattern) = 0;
   virtual std::string error() const = 0;
   virtual MatchList getMatch() const = 0;
@@ -79,6 +82,11 @@ protected:
   void setPattern(const std::string& pattern);
 
 private:
+  IMatcher& operator=(const IMatcher&) = delete;
+
+  IMatcher(IMatcher&&) = delete;
+  IMatcher& operator=(IMatcher&&) = delete;
+
   bool        _ignoreCase{false};
   bool        _matchRegExp{false};
   std::string _pattern{};
