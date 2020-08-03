@@ -70,8 +70,10 @@ namespace priv {
       return IMatcherPtr();
     }
 
+    result->setFindAll(ui->findAllCheck->isChecked());
     result->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
     result->setMatchRegExp(ui->matchRegExpCheck->isChecked());
+    result->setUseUtf8(ui->useUtf8Check->isChecked());
 
     result->compile(ui->patternEdit->text().toStdString());
 
