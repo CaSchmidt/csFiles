@@ -68,6 +68,9 @@ public:
 
   bool recompile();
 
+  bool findAll() const;
+  void setFindAll(const bool on);
+
   bool ignoreCase() const;
   void setIgnoreCase(const bool on);
 
@@ -75,6 +78,9 @@ public:
   void setMatchRegExp(const bool on);
 
   std::string pattern() const;
+
+  bool useUtf8() const;
+  void setUseUtf8(const bool on);
 
 protected:
   virtual bool impl_match(const char *first, const char *last) = 0;
@@ -87,9 +93,11 @@ private:
   IMatcher(IMatcher&&) = delete;
   IMatcher& operator=(IMatcher&&) = delete;
 
+  bool        _findAll{false};
   bool        _ignoreCase{false};
   bool        _matchRegExp{false};
   std::string _pattern{};
+  bool        _useUtf8{false};
 };
 
 IMatcherPtr createDefaultMatcher();

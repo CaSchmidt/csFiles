@@ -68,6 +68,16 @@ bool IMatcher::recompile()
   return compile(pattern());
 }
 
+bool IMatcher::findAll() const
+{
+  return _findAll;
+}
+
+void IMatcher::setFindAll(const bool on)
+{
+  _findAll = on;
+}
+
 bool IMatcher::ignoreCase() const
 {
   return _ignoreCase;
@@ -91,6 +101,16 @@ void IMatcher::setMatchRegExp(const bool on)
 std::string IMatcher::pattern() const
 {
   return _pattern;
+}
+
+bool IMatcher::useUtf8() const
+{
+  return _useUtf8;
+}
+
+void IMatcher::setUseUtf8(const bool on)
+{
+  _useUtf8 = on;
 }
 
 ////// protected /////////////////////////////////////////////////////////////

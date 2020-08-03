@@ -69,7 +69,7 @@ private:
   bool hasCompileContext() const;
   bool initMatchData();
   bool isNewlineCrLf() const;
-  bool isUtf() const;
+  bool isUtf8() const;
   bool isValidMatch() const;
   uint32_t matchOptions() const;
   bool nextMatches(const char *first, const PCRE2_SIZE length);

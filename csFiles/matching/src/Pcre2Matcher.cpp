@@ -185,6 +185,10 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
     storeMatch();
   }
 
+  if( findAll() ) {
+    return nextMatches(first, length);
+  }
+
   return hasMatch();
 }
 
@@ -238,6 +242,9 @@ uint32_t Pcre2Matcher::compileOptions() const
   if( !matchRegExp() ) {
     options |= PCRE2_LITERAL;
   }
+  if( useUtf8() ) {
+    options |= PCRE2_UTF | PCRE2_UCP;
+  }
   return options;
 }
 
@@ -273,7 +280,7 @@ bool Pcre2Matcher::isNewlineCrLf() const
       newline == PCRE2_NEWLINE_CRLF;
 }
 
-bool Pcre2Matcher::isUtf() const
+bool Pcre2Matcher::isUtf8() const
 {
   if( _regexp == nullptr ) {
     return false;
@@ -298,9 +305,11 @@ uint32_t Pcre2Matcher::matchOptions() const
 bool Pcre2Matcher::nextMatches(const char *first, const PCRE2_SIZE length)
 {
   const bool      is_crlf = isNewlineCrLf();
-  const bool       is_utf = isUtf();
+  const bool      is_utf8 = isUtf8();
   const uint32_t options0 = matchOptions();
   while( true ) {
+    resetError();
+
     uint32_t  options = options0;
     PCRE2_SIZE offset = _ovector[1];
 
@@ -317,7 +326,7 @@ bool Pcre2Matcher::nextMatches(const char *first, const PCRE2_SIZE length)
           break;
         }
         offset = start + 1;
-        if( is_utf ) {
+        if( is_utf8 ) {
           offset = priv::skipUtf8(first, length, offset);
         }
       }
@@ -335,7 +344,7 @@ bool Pcre2Matcher::nextMatches(const char *first, const PCRE2_SIZE length)
       if( is_crlf  &&  offset < length - 1  &&
           first[offset] == '\r'  &&  first[offset + 1] == '\n' ) {
         _ovector[1] += 1;
-      } else if( is_utf ) {
+      } else if( is_utf8 ) {
         _ovector[1] = priv::skipUtf8(first, length, _ovector[1]);
       }
       continue;
