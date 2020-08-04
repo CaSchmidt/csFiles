@@ -29,27 +29,36 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
-
-#include <QtWidgets/QApplication>
+#include <QtCore/QSettings>
 
 #include "Settings.h"
-#include "WMainWindow.h"
 
-int main(int argc, char **argv)
-{
-  QApplication app(argc, argv);
+namespace Settings {
 
-  Settings::load();
+  QString editorExec(QStringLiteral("notepad.exe"));
+  QString editorArgs(QStringLiteral("%F"));
 
-  WMainWindow *w = new WMainWindow;
-  w->show();
+  void load()
+  {
+    const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                             QStringLiteral("csLabs"), QStringLiteral("csFiles"));
 
-  const int result = app.exec();
-  delete w;
+    editorExec = settings.value(QStringLiteral("editor/exec"), editorExec).toString();
+    editorArgs = settings.value(QStringLiteral("editor/args"), editorArgs).toString();
+  }
 
-  Settings::save();
+  void save()
+  {
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       QStringLiteral("csLabs"), QStringLiteral("csFiles"));
+    settings.clear();
 
-  return result;
-}
+    settings.beginGroup(QStringLiteral("editor"));
+    settings.setValue(QStringLiteral("exec"), editorExec);
+    settings.setValue(QStringLiteral("args"), editorArgs);
+    settings.endGroup();
+
+    settings.sync();
+  }
+
+} // namespace Settings

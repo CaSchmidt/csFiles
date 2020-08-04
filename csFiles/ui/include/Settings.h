@@ -29,27 +29,19 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <cstdio>
-#include <cstdlib>
+#ifndef SETTINGS_H
+#define SETTINGS_H
 
-#include <QtWidgets/QApplication>
+#include <QStringList>
 
-#include "Settings.h"
-#include "WMainWindow.h"
+namespace Settings {
 
-int main(int argc, char **argv)
-{
-  QApplication app(argc, argv);
+  extern QString editorExec;
+  extern QString editorArgs;
 
-  Settings::load();
+  void load();
+  void save();
 
-  WMainWindow *w = new WMainWindow;
-  w->show();
+} // namespace Settings
 
-  const int result = app.exec();
-  delete w;
-
-  Settings::save();
-
-  return result;
-}
+#endif // SETTINGS_H

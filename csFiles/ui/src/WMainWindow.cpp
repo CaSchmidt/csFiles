@@ -29,9 +29,12 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtCore/QProcess>
+
 #include "WMainWindow.h"
 #include "ui_WMainWindow.h"
 
+#include "Settings.h"
 #include "WFind.h"
 #include "WGrep.h"
 
@@ -81,6 +84,14 @@ void WMainWindow::closeTab()
 
 void WMainWindow::editFile(const QString& filename, int line)
 {
+  const QString quotedFilename = QStringLiteral("\"%1\"").arg(filename);
+
+  QString args = Settings::editorArgs;
+  args.replace(QStringLiteral("%F"), quotedFilename);
+  args.replace(QStringLiteral("%L"), QString::number(line));
+
+  const QString cmd = QStringLiteral("\"%1\" %2").arg(Settings::editorExec).arg(args);
+  QProcess::startDetached(cmd);
 }
 
 void WMainWindow::newFindTab()
