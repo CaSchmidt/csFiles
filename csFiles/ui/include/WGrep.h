@@ -52,12 +52,16 @@ private slots:
   void clearResults();
   void executeGrep();
   void setTabLabel(const QString& text);
+  void showContextMenu(const QPoint& p);
 
 private:
   bool tryCompile();
 
   Ui::WGrep *ui{nullptr};
   csTreeModel *_resultsModel{nullptr};
+
+signals:
+  void editFileRequested(const QString& filename, int line);
 };
 
 #endif // WGREP_H

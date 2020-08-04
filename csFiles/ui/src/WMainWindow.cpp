@@ -79,6 +79,10 @@ void WMainWindow::closeTab()
   }
 }
 
+void WMainWindow::editFile(const QString& filename, int line)
+{
+}
+
 void WMainWindow::newFindTab()
 {
   addTabWidget(new WFind);
@@ -86,7 +90,9 @@ void WMainWindow::newFindTab()
 
 void WMainWindow::newGrepTab()
 {
-  addTabWidget(new WGrep);
+  WGrep *grep = new WGrep;
+  addTabWidget(grep);
+  connect(grep, &WGrep::editFileRequested, this, &WMainWindow::editFile);
 }
 
 void WMainWindow::removeTab(int index)

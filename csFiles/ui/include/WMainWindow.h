@@ -49,6 +49,7 @@ public:
 private slots:
   void closeAllTabs();
   void closeTab();
+  void editFile(const QString& filename, int line);
   void newFindTab();
   void newGrepTab();
   void removeTab(int index);

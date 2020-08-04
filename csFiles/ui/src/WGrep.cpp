@@ -32,6 +32,7 @@
 #include <algorithm>
 
 #include <QtConcurrent/QtConcurrentMap>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QMessageBox>
 
 #include <csQt/csTreeModel.h>
@@ -137,6 +138,7 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
   // User Interface //////////////////////////////////////////////////////////
 
   ui->filesWidget->setAutoRoot(true);
+  ui->resultsView->setContextMenuPolicy(Qt::CustomContextMenu);
 
   new ResultsProxyDelegate(ui->resultsView);
 
@@ -149,6 +151,7 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 
   connect(ui->grepButton, &QPushButton::clicked, this, &WGrep::executeGrep);
   connect(ui->patternEdit, &QLineEdit::textChanged, this, &WGrep::setTabLabel);
+  connect(ui->resultsView, &QTreeView::customContextMenuRequested, this, &WGrep::showContextMenu);
 }
 
 WGrep::~WGrep()
@@ -206,6 +209,35 @@ void WGrep::setTabLabel(const QString& text)
   } else {
     const QString label(QStringLiteral("%1 - [ %2 ]").arg(tabLabelBase()).arg(text));
     emit tabLabelChanged(label);
+  }
+}
+
+void WGrep::showContextMenu(const QPoint& p)
+{
+  QMenu menu;
+
+  QAction  *editAction = menu.addAction(tr("Edit"));
+  menu.addSeparator();
+  QAction *clearAction = menu.addAction(tr("Clear results"));
+
+  QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
+  if(        choice == nullptr ) {
+    return;
+  } else if( choice == editAction ) {
+    csAbstractTreeItem *item = csTreeItem(ui->resultsView->indexAt(p));
+
+    MatchResultsLine *line = dynamic_cast<MatchResultsLine*>(item);
+    MatchResultsFile *file = line != nullptr
+        ? dynamic_cast<MatchResultsFile*>(line->parentItem())
+        : dynamic_cast<MatchResultsFile*>(item);
+
+    if( line != nullptr ) {
+      emit editFileRequested(file->filename(), line->number());
+    } else {
+      emit editFileRequested(file->filename(), 1);
+    }
+  } else if( choice == clearAction ) {
+    clearResults();
   }
 }
 
