@@ -167,7 +167,7 @@ void WFileList::showContextMenu(const QPoint& pos)
   menu.addSeparator();
   QAction *clearRoot = menu.addAction(tr("Clear root"));
 
-  QAction *choice = menu.exec(view()->mapToGlobal(pos));
+  QAction *choice = menu.exec(view()->viewport()->mapToGlobal(pos));
   if(        choice == nullptr ) {
     return;
   } else if( choice == copyList ) {
