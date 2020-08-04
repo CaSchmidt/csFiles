@@ -93,6 +93,11 @@ QVariant MatchResultsFile::data(int column, int role) const
   return QVariant();
 }
 
+QString MatchResultsFile::filename() const
+{
+  return _filename;
+}
+
 ////// MatchResultsLine - public /////////////////////////////////////////////
 
 MatchResultsLine::MatchResultsLine(const MatchedLine& line, MatchResultsFile *parent)
@@ -122,4 +127,9 @@ QVariant MatchResultsLine::data(int column, int role) const
   }
 
   return QVariant();
+}
+
+int MatchResultsLine::number() const
+{
+  return _line.number;
 }

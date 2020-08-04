@@ -67,6 +67,8 @@ public:
 
   QVariant data(int column, int role) const;
 
+  QString filename() const;
+
 private:
   QString _filename;
 };
@@ -77,6 +79,8 @@ public:
   ~MatchResultsLine() = default;
 
   QVariant data(int column, int role) const;
+
+  int number() const;
 
 private:
   MatchedLine _line;
