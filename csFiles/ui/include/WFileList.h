@@ -43,6 +43,10 @@ class WFileList : public csWListEditor {
              WRITE setAutoRoot
              MEMBER _autoRoot
              NOTIFY autoRootChanged)
+  Q_PROPERTY(bool listFilesOnly
+             READ listFilesOnly
+             WRITE setListFilesOnly
+             NOTIFY listFilesOnlyChanged)
   Q_PROPERTY(QString selectionFilter
              READ selectionFilter
              WRITE setSelectionFilter
@@ -56,6 +60,9 @@ public:
 
   bool autoRoot() const;
   void setAutoRoot(const bool on);
+
+  bool listFilesOnly() const;
+  void setListFilesOnly(const bool on);
 
   QString selectionFilter() const;
   void setSelectionFilter(const QString& filter);
@@ -87,6 +94,7 @@ private:
 
 signals:
   void autoRootChanged(bool);
+  void listFilesOnlyChanged(bool);
   void selectionFilterChanged(const QString&);
 };
 

@@ -55,11 +55,15 @@ public:
   QString rootPath() const;
   bool setRoot(const QDir& root);
 
+  bool listFilesOnly() const;
+  void setListFilesOnly(const bool on);
+
 private:
   void refreshModel();
 
   QVector<QString> _files;
   QFileIconProvider _iconProvider;
+  bool _listFilesOnly{false};
   QDir _root;
   QString _rootPath;
 };

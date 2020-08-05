@@ -61,7 +61,7 @@ namespace priv {
   }
 
   template<typename SeqT>
-  void removeNonFiles(SeqT& seq)
+  void removeNoFiles(SeqT& seq)
   {
     // (1) Remove all entries not qualifying as a file ///////////////////////
 
@@ -133,7 +133,9 @@ void FilesModel::append(const QStringList& files)
   }
   beginResetModel();
   priv::appendUnique(_files, files);
-  priv::removeNonFiles(_files);
+  if( _listFilesOnly ) {
+    priv::removeNoFiles(_files);
+  }
   endResetModel();
 }
 
@@ -183,6 +185,16 @@ bool FilesModel::setRoot(const QDir& root)
   _rootPath = _root.absolutePath();
   refreshModel();
   return true;
+}
+
+bool FilesModel::listFilesOnly() const
+{
+  return _listFilesOnly;
+}
+
+void FilesModel::setListFilesOnly(const bool on)
+{
+  _listFilesOnly = on;
 }
 
 ////// private ///////////////////////////////////////////////////////////////

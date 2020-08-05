@@ -90,6 +90,17 @@ void WFileList::setAutoRoot(const bool on)
   emit autoRootChanged(_autoRoot);
 }
 
+bool WFileList::listFilesOnly() const
+{
+  return _model->listFilesOnly();
+}
+
+void WFileList::setListFilesOnly(const bool on)
+{
+  _model->setListFilesOnly(on);
+  emit listFilesOnlyChanged(listFilesOnly());
+}
+
 QString WFileList::selectionFilter() const
 {
   return _selectionFilter;
