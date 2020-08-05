@@ -38,6 +38,11 @@ class QDir;
 
 class WFileList : public csWListEditor {
   Q_OBJECT
+  Q_PROPERTY(bool autoCurrentDir
+             READ autoCurrentDir
+             WRITE setAutoCurrentDir
+             MEMBER _autoCurrentDir
+             NOTIFY autoCurrentDirChanged)
   Q_PROPERTY(bool autoRoot
              READ autoRoot
              WRITE setAutoRoot
@@ -57,6 +62,9 @@ public:
   ~WFileList();
 
   void setEnabledButtons(const bool add_on, const bool remove_on);
+
+  bool autoCurrentDir() const;
+  void setAutoCurrentDir(const bool on);
 
   bool autoRoot() const;
   void setAutoRoot(const bool on);
@@ -88,11 +96,13 @@ private:
   void onAdd() final;
   void onRemove() final;
 
+  bool _autoCurrentDir{false};
   bool _autoRoot{false};
   QString _selectionFilter{};
   class FilesModel *_model{nullptr};
 
 signals:
+  void autoCurrentDirChanged(bool);
   void autoRootChanged(bool);
   void listFilesOnlyChanged(bool);
   void selectionFilterChanged(const QString&);

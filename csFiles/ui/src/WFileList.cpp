@@ -76,6 +76,17 @@ void WFileList::setEnabledButtons(const bool add_on, const bool remove_on)
   button(Remove)->setEnabled(remove_on);
 }
 
+bool WFileList::autoCurrentDir() const
+{
+  return _autoCurrentDir;
+}
+
+void WFileList::setAutoCurrentDir(const bool on)
+{
+  _autoCurrentDir = on;
+  emit autoCurrentDirChanged(autoCurrentDir());
+}
+
 bool WFileList::autoRoot() const
 {
   return _autoRoot;
@@ -84,10 +95,10 @@ bool WFileList::autoRoot() const
 void WFileList::setAutoRoot(const bool on)
 {
   _autoRoot = on;
-  if( !_autoRoot ) {
+  if( !autoRoot() ) {
     clearRoot();
   }
-  emit autoRootChanged(_autoRoot);
+  emit autoRootChanged(autoRoot());
 }
 
 bool WFileList::listFilesOnly() const
@@ -109,7 +120,7 @@ QString WFileList::selectionFilter() const
 void WFileList::setSelectionFilter(const QString& filter)
 {
   _selectionFilter = filter;
-  emit selectionFilterChanged(_selectionFilter);
+  emit selectionFilterChanged(selectionFilter());
 }
 
 int WFileList::count() const
@@ -137,7 +148,7 @@ void WFileList::appendFiles(const QStringList& files)
 void WFileList::appendFiles(const QDir& root, const QStringList& files)
 {
   appendFiles(files);
-  if( _autoRoot ) {
+  if( autoRoot() ) {
     _model->setRoot(root);
   }
 }
@@ -196,15 +207,17 @@ void WFileList::onAdd()
 {
   const QStringList files =
       QFileDialog::getOpenFileNames(this, tr("Select files"), QDir::currentPath(),
-                                    _selectionFilter.isEmpty()
+                                    selectionFilter().isEmpty()
                                     ? tr("All files (*.*)")
-                                    : _selectionFilter);
+                                    : selectionFilter());
   if( files.isEmpty() ) {
     return;
   }
   const QString path = QFileInfo(files.front()).absolutePath();
   appendFiles(path, files);
-  QDir::setCurrent(path);
+  if( autoCurrentDir() ) {
+    QDir::setCurrent(path);
+  }
 }
 
 void WFileList::onRemove()
