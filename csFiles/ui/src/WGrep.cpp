@@ -137,6 +137,7 @@ WGrep::WGrep(QWidget *parent, Qt::WindowFlags f)
 
   // User Interface //////////////////////////////////////////////////////////
 
+  ui->filesWidget->setAutoCurrentDir(true);
   ui->filesWidget->setAutoRoot(true);
   ui->filesWidget->setListFilesOnly(true);
   ui->resultsView->setContextMenuPolicy(Qt::CustomContextMenu);
