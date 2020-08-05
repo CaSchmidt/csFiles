@@ -32,6 +32,7 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <QtCore/QDir>
 #include <QtWidgets/QApplication>
 
 #include "Settings.h"
@@ -40,6 +41,8 @@
 int main(int argc, char **argv)
 {
   QApplication app(argc, argv);
+
+  QDir::setCurrent(QDir::homePath());
 
   Settings::load();
 
