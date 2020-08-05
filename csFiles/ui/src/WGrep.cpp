@@ -164,6 +164,23 @@ QString WGrep::tabLabelBase() const
   return tr("grep");
 }
 
+////// public slots //////////////////////////////////////////////////////////
+
+void WGrep::appendFiles(const QStringList& files)
+{
+  ui->filesWidget->appendFiles(files);
+}
+
+void WGrep::appendFiles(const QDir& root, const QStringList& files)
+{
+  ui->filesWidget->appendFiles(root, files);
+}
+
+void WGrep::appendFiles(const QString& rootPath, const QStringList& files)
+{
+  ui->filesWidget->appendFiles(rootPath, files);
+}
+
 ////// private slots /////////////////////////////////////////////////////////
 
 void WGrep::clearResults()
@@ -218,11 +235,14 @@ void WGrep::showContextMenu(const QPoint& p)
 
   QAction  *editAction = menu.addAction(tr("Edit"));
   menu.addSeparator();
+  QAction  *grepAction = menu.addAction(tr("grep results"));
+  menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
   QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
   if(        choice == nullptr ) {
     return;
+
   } else if( choice == editAction ) {
     csAbstractTreeItem *item = csTreeItem(ui->resultsView->indexAt(p));
 
@@ -236,8 +256,18 @@ void WGrep::showContextMenu(const QPoint& p)
     } else {
       emit editFileRequested(file->filename(), 1);
     }
+
+  } else if( choice == grepAction ) {
+    MatchResultsRoot *root = dynamic_cast<MatchResultsRoot*>(_resultsModel->root());
+    if( root == nullptr ) {
+      return;
+    }
+
+    emit grepRequested(root->rootPath(), root->files());
+
   } else if( choice == clearAction ) {
     clearResults();
+
   }
 }
 

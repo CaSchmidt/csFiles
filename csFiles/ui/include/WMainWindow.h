@@ -50,6 +50,7 @@ private slots:
   void closeAllTabs();
   void closeTab();
   void editFile(const QString& filename, int line);
+  void grepFiles(const QString& rootPath, const QStringList& files);
   void newFindTab();
   void newGrepTab();
   void removeTab(int index);

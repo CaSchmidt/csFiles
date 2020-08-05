@@ -94,6 +94,21 @@ void WMainWindow::editFile(const QString& filename, int line)
   QProcess::startDetached(cmd);
 }
 
+void WMainWindow::grepFiles(const QString& rootPath, const QStringList& files)
+{
+  newGrepTab();
+  WGrep *grep = dynamic_cast<WGrep*>(ui->tabWidget->currentWidget());
+  if( grep == nullptr ) {
+    return;
+  }
+
+  if( rootPath.isEmpty() ) {
+    grep->appendFiles(files);
+  } else {
+    grep->appendFiles(rootPath, files);
+  }
+}
+
 void WMainWindow::newFindTab()
 {
   addTabWidget(new WFind);
@@ -104,6 +119,7 @@ void WMainWindow::newGrepTab()
   WGrep *grep = new WGrep;
   addTabWidget(grep);
   connect(grep, &WGrep::editFileRequested, this, &WMainWindow::editFile);
+  connect(grep, &WGrep::grepRequested, this, &WMainWindow::grepFiles);
 }
 
 void WMainWindow::removeTab(int index)

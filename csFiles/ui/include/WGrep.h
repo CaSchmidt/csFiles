@@ -35,6 +35,7 @@
 #include "ITabWidget.h"
 
 class csTreeModel;
+class QDir;
 
 namespace Ui {
   class WGrep;
@@ -47,6 +48,11 @@ public:
   ~WGrep();
 
   QString tabLabelBase() const;
+
+public slots:
+  void appendFiles(const QStringList& files);
+  void appendFiles(const QDir& root, const QStringList& files);
+  void appendFiles(const QString& rootPath, const QStringList& files);
 
 private slots:
   void clearResults();
@@ -62,6 +68,7 @@ private:
 
 signals:
   void editFileRequested(const QString& filename, int line);
+  void grepRequested(const QString& rootPath, const QStringList& files);
 };
 
 #endif // WGREP_H
