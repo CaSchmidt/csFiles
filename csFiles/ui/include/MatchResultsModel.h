@@ -55,6 +55,10 @@ public:
 
   QString displayFilename(const QString& filename) const;
 
+  QStringList files() const;
+
+  QString rootPath() const;
+
 private:
   QDir _root;
   QString _rootPath;

@@ -73,6 +73,25 @@ QString MatchResultsRoot::displayFilename(const QString& filename) const
       : filename;
 }
 
+QStringList MatchResultsRoot::files() const
+{
+  QStringList result;
+  for(int i = 0; i < rowCount(); i++) {
+    csAbstractTreeItem *item = childItem(i);
+    MatchResultsFile   *file = dynamic_cast<MatchResultsFile*>(item);
+    if( file == nullptr ) {
+      continue;
+    }
+    result.push_back(file->filename());
+  }
+  return result;
+}
+
+QString MatchResultsRoot::rootPath() const
+{
+  return _rootPath;
+}
+
 ////// MatchRestulsFile - public /////////////////////////////////////////////
 
 MatchResultsFile::MatchResultsFile(const QString& filename, MatchResultsRoot *parent)
