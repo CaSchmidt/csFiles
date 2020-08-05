@@ -48,12 +48,17 @@ public:
 
 private slots:
   void browse();
+  void clearResults();
   void executeFind();
   void setTabLabel(const QString& text);
+  void showContextMenu(const QPoint& p);
 
 private:
   Ui::WFind *ui{nullptr};
-  class FilesModel *_model{nullptr};
+  class FilesModel *_resultsModel{nullptr};
+
+signals:
+  void grepRequested(const QString& rootPath, const QStringList& files);
 };
 
 #endif // WFIND_H

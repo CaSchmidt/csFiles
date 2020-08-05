@@ -31,6 +31,7 @@
 
 #include <QtCore/QDirIterator>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QMenu>
 
 #include "WFind.h"
 #include "ui_WFind.h"
@@ -49,16 +50,21 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
 {
   ui->setupUi(this);
 
+  // User Interface //////////////////////////////////////////////////////////
+
+  ui->resultsView->setContextMenuPolicy(Qt::CustomContextMenu);
+
   // Results Model ///////////////////////////////////////////////////////////
 
-  _model = new FilesModel(this);
-  ui->resultsView->setModel(_model);
+  _resultsModel = new FilesModel(this);
+  ui->resultsView->setModel(_resultsModel);
 
   // Signals & Slots /////////////////////////////////////////////////////////
 
   connect(ui->browseButton, &QPushButton::clicked, this, &WFind::browse);
   connect(ui->dirEdit, &QLineEdit::textChanged, this, &WFind::setTabLabel);
   connect(ui->findButton, &QPushButton::clicked, this, &WFind::executeFind);
+  connect(ui->resultsView, &QListView::customContextMenuRequested, this, &WFind::showContextMenu);
 }
 
 WFind::~WFind()
@@ -84,16 +90,21 @@ void WFind::browse()
   QDir::setCurrent(path);
 }
 
+void WFind::clearResults()
+{
+  _resultsModel->clear();
+}
+
 void WFind::executeFind()
 {
   if( ui->dirEdit->text().isEmpty() ) {
     return;
   }
 
-  _model->clear();
+  _resultsModel->clear();
 
   const QDir rootDir(ui->dirEdit->text());
-  _model->setRoot(rootDir);
+  _resultsModel->setRoot(rootDir);
 
   const bool no_filter = !ui->dirsCheck->isChecked()  &&  !ui->filesCheck->isChecked();
 
@@ -113,7 +124,7 @@ void WFind::executeFind()
   while( iter.hasNext() ) {
     results.push_back(iter.next());
   }
-  _model->append(results);
+  _resultsModel->append(results);
 }
 
 void WFind::setTabLabel(const QString& text)
@@ -130,5 +141,26 @@ void WFind::setTabLabel(const QString& text)
       }
     }
     emit tabLabelChanged(QStringLiteral("%1 - [ %2 ]").arg(tabLabelBase()).arg(path));
+  }
+}
+
+void WFind::showContextMenu(const QPoint& p)
+{
+  QMenu menu;
+
+  QAction  *grepAction = menu.addAction(tr("grep results"));
+  menu.addSeparator();
+  QAction *clearAction = menu.addAction(tr("Clear results"));
+
+  QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
+  if(        choice == nullptr ) {
+    return;
+
+  } else if( choice == grepAction ) {
+    emit grepRequested(_resultsModel->rootPath(), _resultsModel->files());
+
+  } else if( choice == clearAction ) {
+    clearResults();
+
   }
 }

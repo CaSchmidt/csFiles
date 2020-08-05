@@ -96,6 +96,10 @@ void WMainWindow::editFile(const QString& filename, int line)
 
 void WMainWindow::grepFiles(const QString& rootPath, const QStringList& files)
 {
+  if( files.isEmpty() ) {
+    return;
+  }
+
   newGrepTab();
   WGrep *grep = dynamic_cast<WGrep*>(ui->tabWidget->currentWidget());
   if( grep == nullptr ) {
@@ -111,7 +115,9 @@ void WMainWindow::grepFiles(const QString& rootPath, const QStringList& files)
 
 void WMainWindow::newFindTab()
 {
-  addTabWidget(new WFind);
+  WFind *find = new WFind;
+  addTabWidget(find);
+  connect(find, &WFind::grepRequested, this, &WMainWindow::grepFiles);
 }
 
 void WMainWindow::newGrepTab()
@@ -148,7 +154,9 @@ void WMainWindow::addTabWidget(ITabWidget *tabWidget)
   if( tabWidget == nullptr ) {
     return;
   }
-  connect(tabWidget, &ITabWidget::tabLabelChanged, this, &WMainWindow::setTabLabel);
+
   const int index = ui->tabWidget->addTab(tabWidget, tabWidget->tabLabelBase());
   ui->tabWidget->setCurrentIndex(index);
+
+  connect(tabWidget, &ITabWidget::tabLabelChanged, this, &WMainWindow::setTabLabel);
 }
