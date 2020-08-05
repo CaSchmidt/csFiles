@@ -34,6 +34,32 @@
 
 #include "FilesModel.h"
 
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  template<typename DestT, typename SrcT>
+  void appendUnique(DestT& dest, const SrcT& src)
+  {
+    // (1) Copy source ///////////////////////////////////////////////////////
+
+    std::copy(src.cbegin(), src.cend(), std::back_inserter(dest));
+
+    // (2) Sort sequence /////////////////////////////////////////////////////
+
+    std::sort(dest.begin(), dest.end());
+
+    // (3) Make sequence unique //////////////////////////////////////////////
+
+    typename DestT::iterator last = std::unique(dest.begin(), dest.end());
+
+    // (4) Remove unnecessary items //////////////////////////////////////////
+
+    dest.erase(last, dest.end());
+  }
+
+} // namespace priv
+
 ////// public ////////////////////////////////////////////////////////////////
 
 FilesModel::FilesModel(QObject *parent)
@@ -88,10 +114,9 @@ void FilesModel::append(const QStringList& files)
   if( files.size() < 1 ) {
     return;
   }
-  beginInsertRows(QModelIndex(), rowCount(), rowCount() + files.size() - 1);
-  _files.reserve(rowCount() + files.size());
-  std::copy(files.cbegin(), files.cend(), std::back_inserter(_files));
-  endInsertRows();
+  beginResetModel();
+  priv::appendUnique(_files, files);
+  endResetModel();
 }
 
 void FilesModel::clear()
