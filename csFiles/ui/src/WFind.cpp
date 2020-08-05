@@ -30,6 +30,7 @@
 *****************************************************************************/
 
 #include <QtCore/QDirIterator>
+#include <QtCore/QRegExp>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenu>
 
@@ -41,6 +42,36 @@
 ////// Constants /////////////////////////////////////////////////////////////
 
 constexpr int kMaxTabLabel = 32;
+
+////// Private ///////////////////////////////////////////////////////////////
+
+namespace priv {
+
+  QString cleanFilter(const QStringList& l)
+  {
+    return l.join(QStringLiteral(", "));
+  }
+
+  bool excludePath(const QString& absPath, const QStringList& excludes)
+  {
+    if( excludes.isEmpty() ) {
+      return false;
+    }
+    for(const QString& exclude : excludes) {
+      if( absPath.contains(exclude, Qt::CaseInsensitive) ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  QStringList prepareFilter(QString s)
+  {
+    s.remove(QRegExp(QStringLiteral("[^,0-9a-z]"), Qt::CaseInsensitive));
+    return s.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+  }
+
+} // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
 
@@ -118,11 +149,30 @@ void WFind::executeFind()
   iterFlags.setFlag(QDirIterator::FollowSymlinks, ui->followSymLinkCheck->isChecked());
   iterFlags.setFlag(QDirIterator::Subdirectories, ui->subDirsCheck->isChecked());
 
+  const QStringList incExtension = priv::prepareFilter(ui->includeExtensionEdit->text());
+  ui->includeExtensionEdit->setText(priv::cleanFilter(incExtension));
+  const QStringList      excPath = priv::prepareFilter(ui->excludePathEdit->text());
+  ui->excludePathEdit->setText(priv::cleanFilter(excPath));
+
   QDirIterator iter(rootDir.absolutePath(), dirFilters, iterFlags);
 
   QStringList results;
   while( iter.hasNext() ) {
-    results.push_back(iter.next());
+    iter.next();
+    const QFileInfo info = iter.fileInfo();
+
+    if( priv::excludePath(info.absolutePath(), excPath) ) {
+      continue;
+    }
+
+    if( !incExtension.isEmpty() ) {
+      if( incExtension.contains(info.suffix(), Qt::CaseInsensitive) ) {
+        results.push_back(info.absoluteFilePath());
+      }
+      continue;
+    }
+
+    results.push_back(info.absoluteFilePath());
   }
   _resultsModel->append(results);
 }

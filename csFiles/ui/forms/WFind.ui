@@ -140,6 +140,74 @@
     </widget>
    </item>
    <item>
+    <widget class="QGroupBox" name="groupBox_4">
+     <property name="title">
+      <string>Filters</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <property name="leftMargin">
+       <number>4</number>
+      </property>
+      <property name="topMargin">
+       <number>4</number>
+      </property>
+      <property name="rightMargin">
+       <number>4</number>
+      </property>
+      <property name="bottomMargin">
+       <number>4</number>
+      </property>
+      <property name="spacing">
+       <number>4</number>
+      </property>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Extension:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QLineEdit" name="includeExtensionEdit">
+        <property name="placeholderText">
+         <string>Limit results to extensions…</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QComboBox" name="comboBox"/>
+      </item>
+      <item row="0" column="3">
+       <widget class="QPushButton" name="pushButton">
+        <property name="text">
+         <string>Set</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Path:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QLineEdit" name="excludePathEdit">
+        <property name="placeholderText">
+         <string>Exclude paths…</string>
+        </property>
+        <property name="clearButtonEnabled">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
       <string>Results</string>
@@ -183,6 +251,10 @@
   <tabstop>subDirsCheck</tabstop>
   <tabstop>dirsCheck</tabstop>
   <tabstop>filesCheck</tabstop>
+  <tabstop>includeExtensionEdit</tabstop>
+  <tabstop>comboBox</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>excludePathEdit</tabstop>
   <tabstop>resultsView</tabstop>
  </tabstops>
  <resources/>
