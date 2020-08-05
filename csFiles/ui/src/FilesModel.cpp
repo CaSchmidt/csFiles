@@ -32,6 +32,8 @@
 #include <algorithm>
 #include <iterator>
 
+#include <QtCore/QFileInfo>
+
 #include "FilesModel.h"
 
 ////// Private ///////////////////////////////////////////////////////////////
@@ -58,6 +60,21 @@ namespace priv {
     dest.erase(last, dest.end());
   }
 
+  template<typename SeqT>
+  void removeNonFiles(SeqT& seq)
+  {
+    // (1) Remove all entries not qualifying as a file ///////////////////////
+
+    typename SeqT::iterator last = std::remove_if(seq.begin(), seq.end(),
+                                                  [](const QString& s) -> bool {
+      return !QFileInfo(s).isFile();
+    });
+
+    // (2) Remove unnecessary items //////////////////////////////////////////
+
+    seq.erase(last, seq.end());
+  }
+
 } // namespace priv
 
 ////// public ////////////////////////////////////////////////////////////////
@@ -80,7 +97,7 @@ QVariant FilesModel::data(const QModelIndex& index, int role) const
     return !_rootPath.isEmpty()  &&  _files[index.row()].startsWith(_rootPath)
         ? _root.relativeFilePath(_files[index.row()])
         : _files[index.row()];
-    } else if( role == Qt::DecorationRole ) {
+  } else if( role == Qt::DecorationRole ) {
     return _iconProvider.icon(QFileInfo(_files[index.row()]));
   } else if( role == Qt::EditRole ) {
     return _files[index.row()];
@@ -116,6 +133,7 @@ void FilesModel::append(const QStringList& files)
   }
   beginResetModel();
   priv::appendUnique(_files, files);
+  priv::removeNonFiles(_files);
   endResetModel();
 }
 
