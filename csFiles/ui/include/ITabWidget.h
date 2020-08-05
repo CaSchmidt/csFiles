@@ -46,6 +46,8 @@ protected slots:
   virtual void setTabLabel(const QString& label) = 0;
 
 signals:
+  void editFileRequested(const QString& filename, int line);
+  void grepRequested(const QString& rootPath, const QStringList& files);
   void tabLabelChanged(const QString&);
 };
 

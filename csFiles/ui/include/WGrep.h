@@ -65,10 +65,6 @@ private:
 
   Ui::WGrep *ui{nullptr};
   csTreeModel *_resultsModel{nullptr};
-
-signals:
-  void editFileRequested(const QString& filename, int line);
-  void grepRequested(const QString& rootPath, const QStringList& files);
 };
 
 #endif // WGREP_H

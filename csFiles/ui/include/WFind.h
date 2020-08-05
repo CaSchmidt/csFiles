@@ -56,9 +56,6 @@ private slots:
 private:
   Ui::WFind *ui{nullptr};
   class FilesModel *_resultsModel{nullptr};
-
-signals:
-  void grepRequested(const QString& rootPath, const QStringList& files);
 };
 
 #endif // WFIND_H

@@ -115,17 +115,12 @@ void WMainWindow::grepFiles(const QString& rootPath, const QStringList& files)
 
 void WMainWindow::newFindTab()
 {
-  WFind *find = new WFind;
-  addTabWidget(find);
-  connect(find, &WFind::grepRequested, this, &WMainWindow::grepFiles);
+  addTabWidget(new WFind);
 }
 
 void WMainWindow::newGrepTab()
 {
-  WGrep *grep = new WGrep;
-  addTabWidget(grep);
-  connect(grep, &WGrep::editFileRequested, this, &WMainWindow::editFile);
-  connect(grep, &WGrep::grepRequested, this, &WMainWindow::grepFiles);
+  addTabWidget(new WGrep);
 }
 
 void WMainWindow::removeTab(int index)
@@ -158,5 +153,7 @@ void WMainWindow::addTabWidget(ITabWidget *tabWidget)
   const int index = ui->tabWidget->addTab(tabWidget, tabWidget->tabLabelBase());
   ui->tabWidget->setCurrentIndex(index);
 
-  connect(tabWidget, &ITabWidget::tabLabelChanged, this, &WMainWindow::setTabLabel);
+  connect(tabWidget, &ITabWidget::editFileRequested, this, &WMainWindow::editFile);
+  connect(tabWidget, &ITabWidget::grepRequested,     this, &WMainWindow::grepFiles);
+  connect(tabWidget, &ITabWidget::tabLabelChanged,   this, &WMainWindow::setTabLabel);
 }
