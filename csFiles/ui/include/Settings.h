@@ -36,8 +36,32 @@
 
 namespace Settings {
 
+  // Data Types //////////////////////////////////////////////////////////////
+
+  struct Preset {
+    Preset(const QString& _name = QString(), const QString& _value = QString())
+      : name(_name)
+      , value(_value)
+    {
+    }
+
+    QString name;
+    QString value;
+  };
+
+  using Presets = QList<Preset>;
+
+  // Settings ////////////////////////////////////////////////////////////////
+
   extern QString editorExec;
   extern QString editorArgs;
+
+  extern Presets extensions;
+
+  // Functions ///////////////////////////////////////////////////////////////
+
+  QString cleanList(const QString& s);
+  QStringList prepareList(QString s);
 
   void load();
   void save();

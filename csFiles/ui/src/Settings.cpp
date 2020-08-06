@@ -35,16 +35,51 @@
 
 namespace Settings {
 
+  // Settings ////////////////////////////////////////////////////////////////
+
   QString editorExec(QStringLiteral("notepad.exe"));
   QString editorArgs(QStringLiteral("%F"));
 
+  Presets extensions;
+
+  // Functions ///////////////////////////////////////////////////////////////
+
+  QString cleanList(const QString& s)
+  {
+    return prepareList(s).join(QStringLiteral(", "));
+  }
+
+  QStringList prepareList(QString s)
+  {
+    s.remove(QRegExp(QStringLiteral("[^,0-9a-z]"), Qt::CaseInsensitive));
+    return s.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+  }
+
   void load()
   {
-    const QSettings settings(QSettings::IniFormat, QSettings::UserScope,
-                             QStringLiteral("csLabs"), QStringLiteral("csFiles"));
+    QSettings settings(QSettings::IniFormat, QSettings::UserScope,
+                       QStringLiteral("csLabs"), QStringLiteral("csFiles"));
 
-    editorExec = settings.value(QStringLiteral("editor/exec"), editorExec).toString();
-    editorArgs = settings.value(QStringLiteral("editor/args"), editorArgs).toString();
+    settings.beginGroup(QStringLiteral("editor"));
+    editorExec = settings.value(QStringLiteral("exec"), editorExec).toString();
+    editorArgs = settings.value(QStringLiteral("args"), editorArgs).toString();
+    settings.endGroup();
+
+    settings.beginGroup(QStringLiteral("extensions"));
+    int i = 0;
+    while( true ) {
+      const QString  name = settings.value(QStringLiteral("name_%1").arg(i), QString()).toString();
+      const QString value = settings.value(QStringLiteral("value_%1").arg(i), QString()).toString();
+
+      if( name.isEmpty()  ||  value.isEmpty() ) {
+        break;
+      }
+
+      extensions.push_back(Preset(name.simplified(), cleanList(value)));
+
+      i++;
+    }
+    settings.endGroup();
   }
 
   void save()
@@ -57,6 +92,17 @@ namespace Settings {
     settings.setValue(QStringLiteral("exec"), editorExec);
     settings.setValue(QStringLiteral("args"), editorArgs);
     settings.endGroup();
+
+    if( !extensions.isEmpty() ) {
+      settings.beginGroup(QStringLiteral("extensions"));
+      for(int i = 0; i < extensions.size(); i++) {
+        settings.setValue(QStringLiteral("name_%1").arg(i), extensions.at(i).name.simplified());
+        settings.setValue(QStringLiteral("value_%1").arg(i), cleanList(extensions.at(i).value));
+      }
+      settings.endGroup();
+    }
+
+    //////////////////////////////////////////////////////////////////////////
 
     settings.sync();
   }
