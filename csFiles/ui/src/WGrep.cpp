@@ -190,6 +190,26 @@ void WGrep::clearResults()
   _resultsModel->setRoot(new MatchResultsRoot(QString()));
 }
 
+void WGrep::editFile(const QModelIndex& index)
+{
+  if( !index.isValid() ) {
+    return;
+  }
+
+  csAbstractTreeItem *item = csTreeItem(index);
+
+  MatchResultsLine *line = dynamic_cast<MatchResultsLine*>(item);
+  MatchResultsFile *file = line != nullptr
+      ? dynamic_cast<MatchResultsFile*>(line->parentItem())
+      : dynamic_cast<MatchResultsFile*>(item);
+
+  if( line != nullptr ) {
+    emit editFileRequested(file->filename(), line->number());
+  } else {
+    emit editFileRequested(file->filename(), 1);
+  }
+}
+
 void WGrep::executeGrep()
 {
   if( ui->filesWidget->count() < 1  ||  !tryCompile() ) {
@@ -246,18 +266,7 @@ void WGrep::showContextMenu(const QPoint& p)
     return;
 
   } else if( choice == editAction ) {
-    csAbstractTreeItem *item = csTreeItem(ui->resultsView->indexAt(p));
-
-    MatchResultsLine *line = dynamic_cast<MatchResultsLine*>(item);
-    MatchResultsFile *file = line != nullptr
-        ? dynamic_cast<MatchResultsFile*>(line->parentItem())
-        : dynamic_cast<MatchResultsFile*>(item);
-
-    if( line != nullptr ) {
-      emit editFileRequested(file->filename(), line->number());
-    } else {
-      emit editFileRequested(file->filename(), 1);
-    }
+    editFile(ui->resultsView->indexAt(p));
 
   } else if( choice == grepAction ) {
     MatchResultsRoot *root = dynamic_cast<MatchResultsRoot*>(_resultsModel->root());

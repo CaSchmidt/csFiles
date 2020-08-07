@@ -84,6 +84,10 @@ void WMainWindow::closeTab()
 
 void WMainWindow::editFile(const QString& filename, int line)
 {
+  if( filename.isEmpty() ) {
+    return;
+  }
+
   const QString quotedFilename = QStringLiteral("\"%1\"").arg(filename);
 
   QString args = Settings::editorArgs;
