@@ -64,8 +64,8 @@ namespace priv {
 
   IFindFilterPtr makeExtensionFilter(Ui::WFind *ui)
   {
-    ui->extensionEdit->setText(cleanPatternList(ui->extensionEdit->text()));
-    return ExtensionFilter::create(ui->extensionEdit->text(), false); // TODO
+    ui->extensionFilterEdit->setText(cleanPatternList(ui->extensionFilterEdit->text()));
+    return ExtensionFilter::create(ui->extensionFilterEdit->text(), ui->extensionRejectCheck->isChecked());
   }
 
   QDirIterator::IteratorFlags makeIterFlags(const Ui::WFind *ui)
