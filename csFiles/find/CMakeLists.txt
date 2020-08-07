@@ -2,6 +2,7 @@
 
 list(APPEND find_HEADERS
   include/ExtensionFilter.h
+  include/FilenameFilter.h
   include/IFindFilter.h
   include/PathFilter.h
   include/PatternList.h
@@ -9,6 +10,7 @@ list(APPEND find_HEADERS
 
 list(APPEND find_SOURCES
   src/ExtensionFilter.cpp
+  src/FilenameFilter.cpp
   src/IFindFilter.cpp
   src/PathFilter.cpp
   src/PatternList.cpp

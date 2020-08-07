@@ -38,6 +38,7 @@
 #include "ui_WFind.h"
 
 #include "ExtensionFilter.h"
+#include "FilenameFilter.h"
 #include "FilesModel.h"
 #include "PathFilter.h"
 #include "PatternList.h"
@@ -67,6 +68,11 @@ namespace priv {
   {
     ui->extensionFilterEdit->setText(cleanPatternList(ui->extensionFilterEdit->text()));
     return ExtensionFilter::create(ui->extensionFilterEdit->text(), ui->extensionRejectCheck->isChecked());
+  }
+
+  IFindFilterPtr makeFilenameFilter(const Ui::WFind *ui)
+  {
+    return FilenameFilter::create(ui->filenameFilterEdit->text(), ui->filenameRejectCheck->isChecked());
   }
 
   QDirIterator::IteratorFlags makeIterFlags(const Ui::WFind *ui)
@@ -151,6 +157,7 @@ void WFind::executeFind()
   _resultsModel->setRoot(rootDir);
 
   const IFindFilterPtr  extFilter = priv::makeExtensionFilter(ui);
+  const IFindFilterPtr fileFilter = priv::makeFilenameFilter(ui);
   const IFindFilterPtr pathFitler = priv::makePathFilter(ui);
 
   const QDir::Filters              dirFilters = priv::makeDirFilters(ui);
@@ -167,6 +174,9 @@ void WFind::executeFind()
       continue;
     }
     if( extFilter->filtered(info) ) {
+      continue;
+    }
+    if( fileFilter->filtered(info) ) {
       continue;
     }
 
