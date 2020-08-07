@@ -3,12 +3,14 @@
 list(APPEND find_HEADERS
   include/ExtensionFilter.h
   include/IFindFilter.h
+  include/PathFilter.h
   include/PatternList.h
   )
 
 list(APPEND find_SOURCES
   src/ExtensionFilter.cpp
   src/IFindFilter.cpp
+  src/PathFilter.cpp
   src/PatternList.cpp
   )
 
