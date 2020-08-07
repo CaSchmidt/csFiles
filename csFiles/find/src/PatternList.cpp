@@ -29,40 +29,19 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#include "PatternList.h"
 
-#include <QStringList>
+////// Public ////////////////////////////////////////////////////////////////
 
-namespace Settings {
+QString cleanPatternList(const QString& s)
+{
+  return preparePatternList(s).join(QStringLiteral(", "));
+}
 
-  // Data Types //////////////////////////////////////////////////////////////
-
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
-
-    QString name;
-    QString value;
-  };
-
-  using Presets = QList<Preset>;
-
-  // Settings ////////////////////////////////////////////////////////////////
-
-  extern QString editorExec;
-  extern QString editorArgs;
-
-  extern Presets extensions;
-
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+QStringList preparePatternList(QString s)
+{
+  s.remove(QRegExp(QStringLiteral("[^.,0-9a-z]"), Qt::CaseInsensitive));
+  QStringList result = s.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+  result.removeAll(QStringLiteral("."));
+  return result;
+}

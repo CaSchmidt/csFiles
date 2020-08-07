@@ -37,7 +37,9 @@
 #include "WFind.h"
 #include "ui_WFind.h"
 
+#include "ExtensionFilter.h"
 #include "FilesModel.h"
+#include "PatternList.h"
 
 ////// Constants /////////////////////////////////////////////////////////////
 
@@ -47,28 +49,32 @@ constexpr int kMaxTabLabel = 32;
 
 namespace priv {
 
-  QString cleanFilter(const QStringList& l)
+  QDir::Filters makeDirFilters(const Ui::WFind *ui)
   {
-    return l.join(QStringLiteral(", "));
+    const bool no_filter = !ui->dirsCheck->isChecked()  &&  !ui->filesCheck->isChecked();
+
+    QDir::Filters result{0};
+    result.setFlag(QDir::NoDot, true);
+    result.setFlag(QDir::NoDotDot, true);
+    result.setFlag(QDir::Dirs,  no_filter  ||  ui->dirsCheck->isChecked());
+    result.setFlag(QDir::Files, no_filter  ||  ui->filesCheck->isChecked());
+
+    return result;
   }
 
-  bool excludePath(const QString& absPath, const QStringList& excludes)
+  IFindFilterPtr makeExtensionFilter(Ui::WFind *ui)
   {
-    if( excludes.isEmpty() ) {
-      return false;
-    }
-    for(const QString& exclude : excludes) {
-      if( absPath.contains(exclude, Qt::CaseInsensitive) ) {
-        return true;
-      }
-    }
-    return false;
+    ui->extensionEdit->setText(cleanPatternList(ui->extensionEdit->text()));
+    return ExtensionFilter::create(ui->extensionEdit->text(), false); // TODO
   }
 
-  QStringList prepareFilter(QString s)
+  QDirIterator::IteratorFlags makeIterFlags(const Ui::WFind *ui)
   {
-    s.remove(QRegExp(QStringLiteral("[^,0-9a-z]"), Qt::CaseInsensitive));
-    return s.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
+    QDirIterator::IteratorFlags result = QDirIterator::NoIteratorFlags;
+    result.setFlag(QDirIterator::FollowSymlinks, ui->followSymLinkCheck->isChecked());
+    result.setFlag(QDirIterator::Subdirectories, ui->subDirsCheck->isChecked());
+
+    return result;
   }
 
 } // namespace priv
@@ -137,22 +143,10 @@ void WFind::executeFind()
   const QDir rootDir(ui->dirEdit->text());
   _resultsModel->setRoot(rootDir);
 
-  const bool no_filter = !ui->dirsCheck->isChecked()  &&  !ui->filesCheck->isChecked();
+  const IFindFilterPtr extFilter = priv::makeExtensionFilter(ui);
 
-  QDir::Filters dirFilters{0};
-  dirFilters.setFlag(QDir::NoDot, true);
-  dirFilters.setFlag(QDir::NoDotDot, true);
-  dirFilters.setFlag(QDir::Dirs,  no_filter  ||  ui->dirsCheck->isChecked());
-  dirFilters.setFlag(QDir::Files, no_filter  ||  ui->filesCheck->isChecked());
-
-  QDirIterator::IteratorFlags iterFlags = QDirIterator::NoIteratorFlags;
-  iterFlags.setFlag(QDirIterator::FollowSymlinks, ui->followSymLinkCheck->isChecked());
-  iterFlags.setFlag(QDirIterator::Subdirectories, ui->subDirsCheck->isChecked());
-
-  const QStringList incExtension = priv::prepareFilter(ui->includeExtensionEdit->text());
-  ui->includeExtensionEdit->setText(priv::cleanFilter(incExtension));
-  const QStringList      excPath = priv::prepareFilter(ui->excludePathEdit->text());
-  ui->excludePathEdit->setText(priv::cleanFilter(excPath));
+  const QDir::Filters              dirFilters = priv::makeDirFilters(ui);
+  const QDirIterator::IteratorFlags iterFlags = priv::makeIterFlags(ui);
 
   QDirIterator iter(rootDir.absolutePath(), dirFilters, iterFlags);
 
@@ -161,14 +155,7 @@ void WFind::executeFind()
     iter.next();
     const QFileInfo info = iter.fileInfo();
 
-    if( priv::excludePath(info.absolutePath(), excPath) ) {
-      continue;
-    }
-
-    if( !incExtension.isEmpty() ) {
-      if( incExtension.contains(info.suffix(), Qt::CaseInsensitive) ) {
-        results.push_back(info.absoluteFilePath());
-      }
+    if( extFilter->filtered(info) ) {
       continue;
     }
 

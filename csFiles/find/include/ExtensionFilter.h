@@ -29,40 +29,30 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef EXTENSIONFILTER_H
+#define EXTENSIONFILTER_H
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
-namespace Settings {
+#include "IFindFilter.h"
 
-  // Data Types //////////////////////////////////////////////////////////////
+class ExtensionFilter : public IFindFilter {
+public:
+  ~ExtensionFilter();
 
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
+  static IFindFilterPtr create(const QString& extensions, const bool reject,
+                               const bool complete = false);
 
-    QString name;
-    QString value;
-  };
+protected:
+  bool isActive() const;
+  bool isMatch(const QFileInfo& info) const;
 
-  using Presets = QList<Preset>;
+private:
+  ExtensionFilter() = delete;
+  ExtensionFilter(const QString& extensions, const bool reject, const bool complete);
 
-  // Settings ////////////////////////////////////////////////////////////////
+  bool _complete{false};
+  QStringList _extensions;
+};
 
-  extern QString editorExec;
-  extern QString editorArgs;
-
-  extern Presets extensions;
-
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+#endif // EXTENSIONFILTER_H

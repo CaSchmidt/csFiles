@@ -29,40 +29,32 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#include "IFindFilter.h"
 
-#include <QStringList>
+////// public ////////////////////////////////////////////////////////////////
 
-namespace Settings {
+IFindFilter::~IFindFilter()
+{
+}
 
-  // Data Types //////////////////////////////////////////////////////////////
+bool IFindFilter::filtered(const QFileInfo& info) const
+{
+  if( !isActive() ) {
+    return false;
+  }
+  return isReject()
+      ? isMatch(info)   // Reject: filter out if matching
+      : !isMatch(info); // Accept: filter out if not matching
+}
 
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
+////// protected /////////////////////////////////////////////////////////////
 
-    QString name;
-    QString value;
-  };
+IFindFilter::IFindFilter(const bool reject)
+  : _reject{reject}
+{
+}
 
-  using Presets = QList<Preset>;
-
-  // Settings ////////////////////////////////////////////////////////////////
-
-  extern QString editorExec;
-  extern QString editorArgs;
-
-  extern Presets extensions;
-
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+bool IFindFilter::isReject() const
+{
+  return _reject;
+}

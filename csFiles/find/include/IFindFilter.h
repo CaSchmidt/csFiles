@@ -29,40 +29,32 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef IFINDFILTER_H
+#define IFINDFILTER_H
 
-#include <QStringList>
+#include <memory>
 
-namespace Settings {
+class QFileInfo;
 
-  // Data Types //////////////////////////////////////////////////////////////
+using IFindFilterPtr = std::unique_ptr<class IFindFilter>;
 
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
+class IFindFilter {
+public:
+  virtual ~IFindFilter();
 
-    QString name;
-    QString value;
-  };
+  bool filtered(const QFileInfo& info) const;
 
-  using Presets = QList<Preset>;
+protected:
+  IFindFilter(const bool reject);
 
-  // Settings ////////////////////////////////////////////////////////////////
+  virtual bool isActive() const = 0;
+  virtual bool isMatch(const QFileInfo& info) const = 0;
+  bool isReject() const;
 
-  extern QString editorExec;
-  extern QString editorArgs;
+private:
+  IFindFilter() = delete;
 
-  extern Presets extensions;
+  bool _reject{false};
+};
 
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+#endif // IFINDFILTER_H

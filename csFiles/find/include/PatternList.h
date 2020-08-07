@@ -29,40 +29,13 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#ifndef PATTERNLIST_H
+#define PATTERNLIST_H
 
-#include <QStringList>
+#include <QtCore/QStringList>
 
-namespace Settings {
+QString cleanPatternList(const QString& s);
 
-  // Data Types //////////////////////////////////////////////////////////////
+QStringList preparePatternList(QString s);
 
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
-
-    QString name;
-    QString value;
-  };
-
-  using Presets = QList<Preset>;
-
-  // Settings ////////////////////////////////////////////////////////////////
-
-  extern QString editorExec;
-  extern QString editorArgs;
-
-  extern Presets extensions;
-
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+#endif // PATTERNLIST_H

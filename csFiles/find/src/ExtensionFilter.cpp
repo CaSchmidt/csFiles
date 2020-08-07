@@ -29,40 +29,45 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#ifndef SETTINGS_H
-#define SETTINGS_H
+#include <QtCore/QFileInfo>
 
-#include <QStringList>
+#include "ExtensionFilter.h"
 
-namespace Settings {
+#include "PatternList.h"
 
-  // Data Types //////////////////////////////////////////////////////////////
+////// public ////////////////////////////////////////////////////////////////
 
-  struct Preset {
-    Preset(const QString& _name = QString(), const QString& _value = QString())
-      : name(_name)
-      , value(_value)
-    {
-    }
+ExtensionFilter::~ExtensionFilter()
+{
+}
 
-    QString name;
-    QString value;
-  };
+IFindFilterPtr ExtensionFilter::create(const QString& extensions, const bool reject,
+                                       const bool complete)
+{
+  return IFindFilterPtr(new ExtensionFilter(extensions, reject, complete));
+}
 
-  using Presets = QList<Preset>;
+////// protected /////////////////////////////////////////////////////////////
 
-  // Settings ////////////////////////////////////////////////////////////////
+bool ExtensionFilter::isActive() const
+{
+  return !_extensions.isEmpty();
+}
 
-  extern QString editorExec;
-  extern QString editorArgs;
+bool ExtensionFilter::isMatch(const QFileInfo& info) const
+{
+  if( _complete ) {
+    return _extensions.contains(info.completeSuffix(), Qt::CaseInsensitive);
+  }
+  return _extensions.contains(info.suffix(), Qt::CaseInsensitive);
+}
 
-  extern Presets extensions;
+////// private ///////////////////////////////////////////////////////////////
 
-  // Functions ///////////////////////////////////////////////////////////////
-
-  void load();
-  void save();
-
-} // namespace Settings
-
-#endif // SETTINGS_H
+ExtensionFilter::ExtensionFilter(const QString& extensions, const bool reject,
+                                 const bool complete)
+  : IFindFilter(reject)
+  , _complete{complete}
+{
+  _extensions = preparePatternList(extensions);
+}

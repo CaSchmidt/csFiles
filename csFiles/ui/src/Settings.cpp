@@ -33,6 +33,8 @@
 
 #include "Settings.h"
 
+#include "PatternList.h"
+
 namespace Settings {
 
   // Settings ////////////////////////////////////////////////////////////////
@@ -43,17 +45,6 @@ namespace Settings {
   Presets extensions;
 
   // Functions ///////////////////////////////////////////////////////////////
-
-  QString cleanList(const QString& s)
-  {
-    return prepareList(s).join(QStringLiteral(", "));
-  }
-
-  QStringList prepareList(QString s)
-  {
-    s.remove(QRegExp(QStringLiteral("[^,0-9a-z]"), Qt::CaseInsensitive));
-    return s.split(QChar::fromLatin1(','), QString::SkipEmptyParts);
-  }
 
   void load()
   {
@@ -75,7 +66,7 @@ namespace Settings {
         break;
       }
 
-      extensions.push_back(Preset(name.simplified(), cleanList(value)));
+      extensions.push_back(Preset(name.simplified(), cleanPatternList(value)));
 
       i++;
     }
@@ -97,7 +88,7 @@ namespace Settings {
       settings.beginGroup(QStringLiteral("extensions"));
       for(int i = 0; i < extensions.size(); i++) {
         settings.setValue(QStringLiteral("name_%1").arg(i), extensions.at(i).name.simplified());
-        settings.setValue(QStringLiteral("value_%1").arg(i), cleanList(extensions.at(i).value));
+        settings.setValue(QStringLiteral("value_%1").arg(i), cleanPatternList(extensions.at(i).value));
       }
       settings.endGroup();
     }
