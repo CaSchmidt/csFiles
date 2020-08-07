@@ -169,6 +169,9 @@
       </item>
       <item row="0" column="1">
        <widget class="QLineEdit" name="pathFilterEdit">
+        <property name="placeholderText">
+         <string>e.g.: 3rdparty, temp, …</string>
+        </property>
         <property name="clearButtonEnabled">
          <bool>true</bool>
         </property>
@@ -190,6 +193,9 @@
       </item>
       <item row="1" column="1">
        <widget class="QLineEdit" name="extensionFilterEdit">
+        <property name="placeholderText">
+         <string>e.g.: tar.gz, zip, …</string>
+        </property>
         <property name="clearButtonEnabled">
          <bool>true</bool>
         </property>
@@ -210,7 +216,11 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QLineEdit" name="filenameFilterEdit"/>
+       <widget class="QLineEdit" name="filenameFilterEdit">
+        <property name="placeholderText">
+         <string>e.g.: *.txt</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2">
        <widget class="QCheckBox" name="filenameRejectCheck">
