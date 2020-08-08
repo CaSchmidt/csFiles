@@ -26,15 +26,14 @@ add_library(matching STATIC
 
 format_output_name(matching "matching")
 
+set_target_properties(matching PROPERTIES
+  CXX_STANDARD 17
+  CXX_STANDARD_REQUIRED ON
+  )
+
 target_compile_definitions(matching
   PRIVATE PCRE2_CODE_UNIT_WIDTH=8
   )
-
-if(MSVC)
-  target_compile_options(matching
-    PRIVATE /std:c++17
-    )
-endif()
 
 target_include_directories(matching
   PRIVATE ${csFiles_BINARY_DIR}/3rdparty/pcre2-src
