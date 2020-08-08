@@ -42,6 +42,7 @@
 #include "FilesModel.h"
 #include "PathFilter.h"
 #include "PatternList.h"
+#include "Settings.h"
 
 ////// Constants /////////////////////////////////////////////////////////////
 
@@ -64,10 +65,10 @@ namespace priv {
     return result;
   }
 
-  IFindFilterPtr makeExtensionFilter(Ui::WFind *ui)
+  IFindFilterPtr makeExtensionFilter(Ui::WFind *ui, const bool complete)
   {
     ui->extensionFilterEdit->setText(cleanPatternList(ui->extensionFilterEdit->text()));
-    return ExtensionFilter::create(ui->extensionFilterEdit->text(), ui->extensionRejectCheck->isChecked());
+    return ExtensionFilter::create(ui->extensionFilterEdit->text(), ui->extensionRejectCheck->isChecked(), complete);
   }
 
   IFindFilterPtr makeFilenameFilter(const Ui::WFind *ui)
@@ -103,6 +104,25 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
   // User Interface //////////////////////////////////////////////////////////
 
   ui->resultsView->setContextMenuPolicy(Qt::CustomContextMenu);
+
+  {
+    QMenu *extMenu = new QMenu(this);
+
+    _completeSuffixAction = extMenu->addAction(tr("Complete suffix"));
+    _completeSuffixAction->setCheckable(true);
+
+    if( !Settings::extensions.isEmpty() ) {
+      extMenu->addSeparator();
+
+      for(const Settings::Preset& p : Settings::extensions) {
+        QAction *action = extMenu->addAction(p.name);
+        action->setData(p.value);
+        connect(action, &QAction::triggered, this, &WFind::setExtension);
+      }
+    }
+
+    ui->extensionButton->setMenu(extMenu);
+  }
 
   // Results Model ///////////////////////////////////////////////////////////
 
@@ -156,7 +176,7 @@ void WFind::executeFind()
   const QDir rootDir(ui->dirEdit->text());
   _resultsModel->setRoot(rootDir);
 
-  const IFindFilterPtr  extFilter = priv::makeExtensionFilter(ui);
+  const IFindFilterPtr  extFilter = priv::makeExtensionFilter(ui, _completeSuffixAction->isChecked());
   const IFindFilterPtr fileFilter = priv::makeFilenameFilter(ui);
   const IFindFilterPtr pathFitler = priv::makePathFilter(ui);
 
@@ -183,6 +203,15 @@ void WFind::executeFind()
     results.push_back(info.absoluteFilePath());
   }
   _resultsModel->append(results);
+}
+
+void WFind::setExtension()
+{
+  QAction *action = qobject_cast<QAction*>(sender());
+  if( action == nullptr ) {
+    return;
+  }
+  ui->extensionFilterEdit->setText(cleanPatternList(action->data().toString()));
 }
 
 void WFind::setTabLabel(const QString& text)

@@ -50,11 +50,13 @@ private slots:
   void browse();
   void clearResults();
   void executeFind();
+  void setExtension();
   void setTabLabel(const QString& text);
   void showResultsContextMenu(const QPoint& p);
 
 private:
   Ui::WFind *ui{nullptr};
+  QAction *_completeSuffixAction{nullptr};
   class FilesModel *_resultsModel{nullptr};
 };
 
