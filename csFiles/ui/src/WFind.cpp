@@ -114,7 +114,7 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
   connect(ui->browseButton, &QPushButton::clicked, this, &WFind::browse);
   connect(ui->dirEdit, &QLineEdit::textChanged, this, &WFind::setTabLabel);
   connect(ui->findButton, &QPushButton::clicked, this, &WFind::executeFind);
-  connect(ui->resultsView, &QListView::customContextMenuRequested, this, &WFind::showContextMenu);
+  connect(ui->resultsView, &QListView::customContextMenuRequested, this, &WFind::showResultsContextMenu);
 }
 
 WFind::~WFind()
@@ -151,7 +151,7 @@ void WFind::executeFind()
     return;
   }
 
-  _resultsModel->clear();
+  clearResults();
 
   const QDir rootDir(ui->dirEdit->text());
   _resultsModel->setRoot(rootDir);
@@ -202,11 +202,13 @@ void WFind::setTabLabel(const QString& text)
   }
 }
 
-void WFind::showContextMenu(const QPoint& p)
+void WFind::showResultsContextMenu(const QPoint& p)
 {
   QMenu menu;
 
   QAction  *grepAction = menu.addAction(tr("grep results"));
+  menu.addSeparator();
+  QAction  *openAction = menu.addAction(tr("Open location"));
   menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
@@ -216,6 +218,11 @@ void WFind::showContextMenu(const QPoint& p)
 
   } else if( choice == grepAction ) {
     emit grepRequested(_resultsModel->rootPath(), _resultsModel->files());
+
+  } else if( choice == openAction ) {
+    const QModelIndex index = ui->resultsView->indexAt(p);
+    const QString filename = _resultsModel->data(index, Qt::EditRole).toString();
+    emit openLocationRequested(filename);
 
   } else if( choice == clearAction ) {
     clearResults();

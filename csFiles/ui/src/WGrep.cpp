@@ -253,6 +253,16 @@ void WGrep::executeGrep()
   _resultsModel->setRoot(priv::makeResults(future.results(), ui->filesWidget->rootPath()));
 }
 
+void WGrep::openLocation(const QModelIndex& index)
+{
+  auto [file, line] = priv::makeLocation(index);
+  if( file == nullptr ) {
+    return;
+  }
+
+  emit openLocationRequested(file->filename());
+}
+
 void WGrep::setTabLabel(const QString& text)
 {
   if( text.isEmpty() ) {
@@ -271,6 +281,8 @@ void WGrep::showContextMenu(const QPoint& p)
   menu.addSeparator();
   QAction  *grepAction = menu.addAction(tr("grep results"));
   menu.addSeparator();
+  QAction  *openAction = menu.addAction(tr("Open location"));
+  menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
   QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
@@ -287,6 +299,9 @@ void WGrep::showContextMenu(const QPoint& p)
     }
 
     emit grepRequested(root->rootPath(), root->files());
+
+  } else if( choice == openAction ) {
+    openLocation(ui->resultsView->indexAt(p));
 
   } else if( choice == clearAction ) {
     clearResults();

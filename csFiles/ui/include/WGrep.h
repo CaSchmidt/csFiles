@@ -58,6 +58,7 @@ private slots:
   void clearResults();
   void editFile(const QModelIndex& index);
   void executeGrep();
+  void openLocation(const QModelIndex& index);
   void setTabLabel(const QString& text);
   void showContextMenu(const QPoint& p);
 

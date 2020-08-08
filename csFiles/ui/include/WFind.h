@@ -51,7 +51,7 @@ private slots:
   void clearResults();
   void executeFind();
   void setTabLabel(const QString& text);
-  void showContextMenu(const QPoint& p);
+  void showResultsContextMenu(const QPoint& p);
 
 private:
   Ui::WFind *ui{nullptr};
