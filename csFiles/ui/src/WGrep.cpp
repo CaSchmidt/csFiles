@@ -60,6 +60,24 @@ namespace priv {
     return job;
   }
 
+  using Location = QPair<const MatchResultsFile*,const MatchResultsLine*>;
+
+  Location makeLocation(const QModelIndex& index)
+  {
+    if( !index.isValid() ) {
+      return Location{nullptr, nullptr};
+    }
+
+    const csAbstractTreeItem *item = csTreeItem(index);
+
+    const MatchResultsLine *line = dynamic_cast<const MatchResultsLine*>(item);
+    const MatchResultsFile *file = line != nullptr
+        ? dynamic_cast<const MatchResultsFile*>(line->parentItem())
+        : dynamic_cast<const MatchResultsFile*>(item);
+
+    return Location{file, line};
+  }
+
   IMatcherPtr makeMatcher(const Ui::WGrep *ui)
   {
     if( ui->patternEdit->text().isEmpty() ) {
@@ -192,16 +210,10 @@ void WGrep::clearResults()
 
 void WGrep::editFile(const QModelIndex& index)
 {
-  if( !index.isValid() ) {
+  auto [file, line] = priv::makeLocation(index);
+  if( file == nullptr ) {
     return;
   }
-
-  csAbstractTreeItem *item = csTreeItem(index);
-
-  MatchResultsLine *line = dynamic_cast<MatchResultsLine*>(item);
-  MatchResultsFile *file = line != nullptr
-      ? dynamic_cast<MatchResultsFile*>(line->parentItem())
-      : dynamic_cast<MatchResultsFile*>(item);
 
   if( line != nullptr ) {
     emit editFileRequested(file->filename(), line->number());
