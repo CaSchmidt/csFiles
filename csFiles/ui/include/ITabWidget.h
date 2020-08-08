@@ -48,6 +48,7 @@ protected slots:
 signals:
   void editFileRequested(const QString& filename, int line);
   void grepRequested(const QString& rootPath, const QStringList& files);
+  void openLocationRequested(const QString& path);
   void tabLabelChanged(const QString&);
 };
 

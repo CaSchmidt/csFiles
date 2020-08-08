@@ -29,7 +29,10 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
+#include <QtCore/QFileInfo>
 #include <QtCore/QProcess>
+#include <QtCore/QUrl>
+#include <QtGui/QDesktopServices>
 
 #include "WMainWindow.h"
 #include "ui_WMainWindow.h"
@@ -127,6 +130,19 @@ void WMainWindow::newGrepTab()
   addTabWidget(new WGrep);
 }
 
+void WMainWindow::openLocation(const QString& s)
+{
+  if( s.isEmpty() ) {
+    return;
+  }
+  const QFileInfo info(s);
+  const QString path = info.isDir()
+      ? info.absoluteFilePath()
+      : info.absolutePath();
+
+  QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+}
+
 void WMainWindow::removeTab(int index)
 {
   QWidget *w = ui->tabWidget->widget(index);
@@ -157,7 +173,8 @@ void WMainWindow::addTabWidget(ITabWidget *tabWidget)
   const int index = ui->tabWidget->addTab(tabWidget, tabWidget->tabLabelBase());
   ui->tabWidget->setCurrentIndex(index);
 
-  connect(tabWidget, &ITabWidget::editFileRequested, this, &WMainWindow::editFile);
-  connect(tabWidget, &ITabWidget::grepRequested,     this, &WMainWindow::grepFiles);
-  connect(tabWidget, &ITabWidget::tabLabelChanged,   this, &WMainWindow::setTabLabel);
+  connect(tabWidget, &ITabWidget::editFileRequested,     this, &WMainWindow::editFile);
+  connect(tabWidget, &ITabWidget::grepRequested,         this, &WMainWindow::grepFiles);
+  connect(tabWidget, &ITabWidget::openLocationRequested, this, &WMainWindow::openLocation);
+  connect(tabWidget, &ITabWidget::tabLabelChanged,       this, &WMainWindow::setTabLabel);
 }

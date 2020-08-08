@@ -53,6 +53,7 @@ private slots:
   void grepFiles(const QString& rootPath, const QStringList& files);
   void newFindTab();
   void newGrepTab();
+  void openLocation(const QString& s);
   void removeTab(int index);
   void setTabLabel(const QString& text);
 
