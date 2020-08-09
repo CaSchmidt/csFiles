@@ -43,6 +43,16 @@ IMatcher::~IMatcher()
 {
 }
 
+MatcherFlags IMatcher::flags() const
+{
+  return _flags;
+}
+
+void IMatcher::setFlags(const MatcherFlags f)
+{
+  _flags = f;
+}
+
 bool IMatcher::match(const char *str)
 {
   return impl_match(str, str + cs::length(str));
@@ -68,49 +78,9 @@ bool IMatcher::recompile()
   return compile(pattern());
 }
 
-bool IMatcher::findAll() const
-{
-  return _findAll;
-}
-
-void IMatcher::setFindAll(const bool on)
-{
-  _findAll = on;
-}
-
-bool IMatcher::ignoreCase() const
-{
-  return _ignoreCase;
-}
-
-void IMatcher::setIgnoreCase(const bool on)
-{
-  _ignoreCase = on;
-}
-
-bool IMatcher::matchRegExp() const
-{
-  return _matchRegExp;
-}
-
-void IMatcher::setMatchRegExp(const bool on)
-{
-  _matchRegExp = on;
-}
-
 std::string IMatcher::pattern() const
 {
   return _pattern;
-}
-
-bool IMatcher::useUtf8() const
-{
-  return _useUtf8;
-}
-
-void IMatcher::setUseUtf8(const bool on)
-{
-  _useUtf8 = on;
 }
 
 ////// protected /////////////////////////////////////////////////////////////

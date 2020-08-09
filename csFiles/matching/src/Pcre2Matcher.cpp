@@ -185,7 +185,7 @@ bool Pcre2Matcher::impl_match(const char *first, const char *last)
     storeMatch();
   }
 
-  if( findAll() ) {
+  if( cs::testFlag(flags(), MatcherFlags::FindAll) ) {
     return nextMatches(first, length);
   }
 
@@ -236,13 +236,13 @@ void Pcre2Matcher::clear(const bool all)
 uint32_t Pcre2Matcher::compileOptions() const
 {
   uint32_t options = 0;
-  if( ignoreCase() ) {
+  if( cs::testFlag(flags(), MatcherFlags::CaseInsensitive) ) {
     options |= PCRE2_CASELESS;
   }
-  if( !matchRegExp() ) {
+  if( !cs::testFlag(flags(), MatcherFlags::RegExp) ) {
     options |= PCRE2_LITERAL;
   }
-  if( useUtf8() ) {
+  if( cs::testFlag(flags(), MatcherFlags::Utf8) ) {
     options |= PCRE2_UTF | PCRE2_UCP;
   }
   return options;

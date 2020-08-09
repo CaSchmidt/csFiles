@@ -39,7 +39,19 @@
 #include <string>
 #include <utility>
 
+#include <csUtil/csFlags.h>
+
 #include "TextInfo.h"
+
+enum class MatcherFlags : unsigned int {
+  NoFlags         = 0,
+  CaseInsensitive = 1,
+  FindAll         = 2,
+  RegExp          = 4,
+  Utf8            = 8
+};
+
+CS_ENABLE_FLAGS(MatcherFlags);
 
 using Match     = std::pair<int,int>;
 using MatchList = std::list<Match>;
@@ -61,6 +73,9 @@ public:
   virtual bool isError() const = 0;
   virtual bool setEndOfLine(const EndOfLine eol) = 0;
 
+  MatcherFlags flags() const;
+  void setFlags(const MatcherFlags f);
+
   bool match(const char *str);
   bool match(const char *str, const std::size_t len);
   bool match(const std::string& str);
@@ -68,19 +83,7 @@ public:
 
   bool recompile();
 
-  bool findAll() const;
-  void setFindAll(const bool on);
-
-  bool ignoreCase() const;
-  void setIgnoreCase(const bool on);
-
-  bool matchRegExp() const;
-  void setMatchRegExp(const bool on);
-
   std::string pattern() const;
-
-  bool useUtf8() const;
-  void setUseUtf8(const bool on);
 
 protected:
   virtual bool impl_match(const char *first, const char *last) = 0;
@@ -93,11 +96,8 @@ private:
   IMatcher(IMatcher&&) = delete;
   IMatcher& operator=(IMatcher&&) = delete;
 
-  bool        _findAll{false};
-  bool        _ignoreCase{false};
-  bool        _matchRegExp{false};
+  MatcherFlags _flags{MatcherFlags::NoFlags};
   std::string _pattern{};
-  bool        _useUtf8{false};
 };
 
 IMatcherPtr createDefaultMatcher();

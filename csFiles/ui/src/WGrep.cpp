@@ -89,10 +89,14 @@ namespace priv {
       return IMatcherPtr();
     }
 
-    result->setFindAll(ui->findAllCheck->isChecked());
-    result->setIgnoreCase(ui->ignoreCaseCheck->isChecked());
-    result->setMatchRegExp(ui->matchRegExpCheck->isChecked());
-    result->setUseUtf8(ui->useUtf8Check->isChecked());
+    MatcherFlags flags{MatcherFlags::NoFlags};
+    {
+      cs::setFlags(flags, MatcherFlags::CaseInsensitive, ui->ignoreCaseCheck->isChecked());
+      cs::setFlags(flags, MatcherFlags::FindAll, ui->findAllCheck->isChecked());
+      cs::setFlags(flags, MatcherFlags::RegExp, ui->matchRegExpCheck->isChecked());
+      cs::setFlags(flags, MatcherFlags::Utf8, ui->useUtf8Check->isChecked());
+    }
+    result->setFlags(flags);
 
     result->compile(ui->patternEdit->text().toStdString());
 
