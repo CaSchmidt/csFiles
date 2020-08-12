@@ -43,7 +43,7 @@
 
 #include "TextInfo.h"
 
-enum class MatcherFlags : unsigned int {
+enum class MatchFlag : unsigned {
   NoFlags         = 0,
   CaseInsensitive = 1,
   FindAll         = 2,
@@ -51,7 +51,9 @@ enum class MatcherFlags : unsigned int {
   Utf8            = 8
 };
 
-CS_ENABLE_FLAGS(MatcherFlags);
+CS_ENABLE_FLAGS(MatchFlag);
+
+using MatchFlags = csFlags<MatchFlag>;
 
 using Match     = std::pair<int,int>;
 using MatchList = std::list<Match>;
@@ -73,8 +75,8 @@ public:
   virtual bool isError() const = 0;
   virtual bool setEndOfLine(const EndOfLine eol) = 0;
 
-  MatcherFlags flags() const;
-  void setFlags(const MatcherFlags f);
+  MatchFlags flags() const;
+  void setFlags(const MatchFlags f);
 
   bool match(const char *str);
   bool match(const char *str, const std::size_t len);
@@ -96,7 +98,7 @@ private:
   IMatcher(IMatcher&&) = delete;
   IMatcher& operator=(IMatcher&&) = delete;
 
-  MatcherFlags _flags{MatcherFlags::NoFlags};
+  MatchFlags _flags{MatchFlag::NoFlags};
   std::string _pattern{};
 };
 

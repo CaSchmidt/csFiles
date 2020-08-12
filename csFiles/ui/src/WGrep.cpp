@@ -89,12 +89,12 @@ namespace priv {
       return IMatcherPtr();
     }
 
-    MatcherFlags flags{MatcherFlags::NoFlags};
+    MatchFlags flags{MatchFlag::NoFlags};
     {
-      cs::setFlags(flags, MatcherFlags::CaseInsensitive, ui->ignoreCaseCheck->isChecked());
-      cs::setFlags(flags, MatcherFlags::FindAll, ui->findAllCheck->isChecked());
-      cs::setFlags(flags, MatcherFlags::RegExp, ui->matchRegExpCheck->isChecked());
-      cs::setFlags(flags, MatcherFlags::Utf8, ui->useUtf8Check->isChecked());
+      flags.set(MatchFlag::CaseInsensitive, ui->ignoreCaseCheck->isChecked());
+      flags.set(MatchFlag::FindAll, ui->findAllCheck->isChecked());
+      flags.set(MatchFlag::RegExp, ui->matchRegExpCheck->isChecked());
+      flags.set(MatchFlag::Utf8, ui->useUtf8Check->isChecked());
     }
     result->setFlags(flags);
 

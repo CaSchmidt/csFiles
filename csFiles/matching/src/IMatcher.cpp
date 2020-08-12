@@ -43,12 +43,12 @@ IMatcher::~IMatcher()
 {
 }
 
-MatcherFlags IMatcher::flags() const
+MatchFlags IMatcher::flags() const
 {
   return _flags;
 }
 
-void IMatcher::setFlags(const MatcherFlags f)
+void IMatcher::setFlags(const MatchFlags f)
 {
   _flags = f;
 }
