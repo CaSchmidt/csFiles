@@ -60,6 +60,8 @@ WProgressLogger::WProgressLogger(QWidget *parent, Qt::WindowFlags f)
 
   // User Interface //////////////////////////////////////////////////////////
 
+  setWindowFlag(Qt::WindowCloseButtonHint, false);
+
   priv::removeAllButtons(ui->buttonBox);
 
   ui->buttonBox->addButton(QDialogButtonBox::Cancel);
