@@ -51,6 +51,7 @@ public:
 
   int maximum() const;
   int minimum() const;
+  int value() const;
 
   template<typename T>
   void setFutureWatcher(QFutureWatcher<T> *watcher);
@@ -61,6 +62,7 @@ public slots:
   void setMinimum(int minimum);
   void setRange(int minimum, int maximum);
   void setValue(int value);
+  void stepValue(int dir = 1);
 
 private:  
   Ui::WProgressLogger *ui{nullptr};

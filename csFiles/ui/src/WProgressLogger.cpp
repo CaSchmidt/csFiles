@@ -103,6 +103,11 @@ int WProgressLogger::minimum() const
   return ui->progressBar->minimum();
 }
 
+int WProgressLogger::value() const
+{
+  return ui->progressBar->value();
+}
+
 ////// public slots //////////////////////////////////////////////////////////
 
 void WProgressLogger::finish()
@@ -140,4 +145,15 @@ void WProgressLogger::setRange(int minimum, int maximum)
 void WProgressLogger::setValue(int value)
 {
   ui->progressBar->setValue(value);
+}
+
+void WProgressLogger::stepValue(int dir)
+{
+  if( dir == 0 ) {
+    return;
+  }
+  const int inc = dir > 0
+      ? 1
+      : -1;
+  setValue(qBound<int>(minimum(), value() + inc, maximum()));
 }
