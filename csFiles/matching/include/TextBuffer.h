@@ -39,7 +39,7 @@
 
 #include "TextInfo.h"
 
-class QFileDevice;
+class QIODevice;
 
 using TextBufferPtr = std::unique_ptr<class TextBuffer>;
 
@@ -59,7 +59,7 @@ public:
   TextLine nextLine(const bool keepEnding = true, bool *ok = nullptr);
 
   // NOTE: TextBuffer takes ownership of 'device'!
-  static TextBufferPtr create(QFileDevice *device);
+  static TextBufferPtr create(QIODevice *device);
 
 private:
   TextBuffer() noexcept = delete;
@@ -67,7 +67,7 @@ private:
   TextBuffer(const TextBuffer&) noexcept = delete;
   TextBuffer& operator=(const TextBuffer&) noexcept = delete;
 
-  TextBuffer(QFileDevice *device) noexcept;
+  TextBuffer(QIODevice *device) noexcept;
 
   bool canFill() const;
   bool canGrow() const;
@@ -78,7 +78,7 @@ private:
   bool growCache();
 
   TextFileCache _cache{};
-  QFileDevice  *_device{nullptr};
+  QIODevice    *_device{nullptr};
   TextInfo      _info{};
 };
 

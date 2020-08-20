@@ -29,7 +29,7 @@
 ** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *****************************************************************************/
 
-#include <QtCore/QFileDevice>
+#include <QtCore/QIODevice>
 
 #include "TextBuffer.h"
 
@@ -114,7 +114,7 @@ TextLine TextBuffer::nextLine(const bool keepEnding, bool *ok)
   return line;
 }
 
-TextBufferPtr TextBuffer::create(QFileDevice *device)
+TextBufferPtr TextBuffer::create(QIODevice *device)
 {
   TextBufferPtr result(new TextBuffer(device));
   if( !result->isValid() ) {
@@ -126,7 +126,7 @@ TextBufferPtr TextBuffer::create(QFileDevice *device)
 
 ////// private ///////////////////////////////////////////////////////////////
 
-TextBuffer::TextBuffer(QFileDevice *device) noexcept
+TextBuffer::TextBuffer(QIODevice *device) noexcept
   : _device{device}
 {
   _cache.initialize(kIniBufferSize);
