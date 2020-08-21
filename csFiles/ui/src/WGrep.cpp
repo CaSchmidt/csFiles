@@ -36,10 +36,10 @@
 #include <QtWidgets/QMessageBox>
 
 #include <csQt/csTreeModel.h>
+#include <csUtil/csWProgressLogger.h>
 
 #include "MatchResultsModel.h"
 #include "ResultsProxyDelegate.h"
-#include "WProgressLogger.h"
 
 #include "WGrep.h"
 #include "ui_WGrep.h"
@@ -236,7 +236,7 @@ void WGrep::executeGrep()
 
   IMatcherPtr matcher = priv::makeMatcher(ui);
 
-  WProgressLogger dialog(this);
+  csWProgressLogger dialog(this);
   dialog.setWindowTitle(tr("Executing grep..."));
 
   MatchJobs jobs;

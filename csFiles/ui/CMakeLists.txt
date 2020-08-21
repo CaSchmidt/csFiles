@@ -4,7 +4,6 @@ list(APPEND ui_FORMS
   forms/WFind.ui
   forms/WGrep.ui
   forms/WMainWindow.ui
-  forms/WProgressLogger.ui
   )
 
 list(APPEND ui_HEADERS
@@ -18,7 +17,6 @@ list(APPEND ui_HEADERS
   include/WFind.h
   include/WGrep.h
   include/WMainWindow.h
-  include/WProgressLogger.h
   )
 
 list(APPEND ui_SOURCES
@@ -32,7 +30,6 @@ list(APPEND ui_SOURCES
   src/WFind.cpp
   src/WGrep.cpp
   src/WMainWindow.cpp
-  src/WProgressLogger.cpp
   src/main.cpp
   )
 
