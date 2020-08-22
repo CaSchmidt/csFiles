@@ -36,6 +36,7 @@
 #include <QtWidgets/QMessageBox>
 
 #include <csQt/csTreeModel.h>
+#include <csQt/csQtUtil.h>
 #include <csUtil/csWProgressLogger.h>
 
 #include "MatchResultsModel.h"
@@ -289,7 +290,7 @@ void WGrep::showContextMenu(const QPoint& p)
   menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
-  QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
+  QAction *choice = menu.exec(csMapToGlobal(ui->resultsView, p));
   if(        choice == nullptr ) {
     return;
 

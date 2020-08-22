@@ -34,6 +34,8 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QMenu>
 
+#include <csQt/csQtUtil.h>
+
 #include "WFind.h"
 #include "ui_WFind.h"
 
@@ -241,7 +243,7 @@ void WFind::showResultsContextMenu(const QPoint& p)
   menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
-  QAction *choice = menu.exec(ui->resultsView->viewport()->mapToGlobal(p));
+  QAction *choice = menu.exec(csMapToGlobal(ui->resultsView, p));
   if(        choice == nullptr ) {
     return;
 
