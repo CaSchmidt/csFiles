@@ -50,8 +50,9 @@ WFileList::WFileList(QWidget *parent, Qt::WindowFlags f)
   button(Up)->setVisible(false);
   button(Down)->setVisible(false);
 
+  setShowContextMenu(true);
+
   view()->setAlternatingRowColors(true);
-  view()->setContextMenuPolicy(Qt::CustomContextMenu);
   view()->setEditTriggers(QAbstractItemView::NoEditTriggers);
   view()->setSelectionBehavior(QAbstractItemView::SelectRows);
   view()->setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -60,10 +61,6 @@ WFileList::WFileList(QWidget *parent, Qt::WindowFlags f)
 
   _model = new FilesModel(this);
   view()->setModel(_model);
-
-  // Signals & Slots /////////////////////////////////////////////////////////
-
-  connect(view(), &QListView::customContextMenuRequested, this, &WFileList::showContextMenu);
 }
 
 WFileList::~WFileList()
@@ -172,29 +169,6 @@ void WFileList::copyList()
   csSetClipboardText(files);
 }
 
-////// public ////////////////////////////////////////////////////////////////
-
-void WFileList::showContextMenu(const QPoint& pos)
-{
-  QMenu menu;
-  QAction *copyList = menu.addAction(tr("Copy list"));
-  menu.addSeparator();
-  QAction *clearList = menu.addAction(tr("Clear list"));
-  menu.addSeparator();
-  QAction *clearRoot = menu.addAction(tr("Clear root"));
-
-  QAction *choice = menu.exec(view()->viewport()->mapToGlobal(pos));
-  if(        choice == nullptr ) {
-    return;
-  } else if( choice == copyList ) {
-    WFileList::copyList();
-  } else if( choice == clearRoot ) {
-    WFileList::clearRoot();
-  } else if( choice == clearList ) {
-    WFileList::clearList();
-  }
-}
-
 ////// private ///////////////////////////////////////////////////////////////
 
 void WFileList::onAdd()
@@ -211,6 +185,27 @@ void WFileList::onAdd()
   appendFiles(path, files);
   if( autoCurrentDir() ) {
     QDir::setCurrent(path);
+  }
+}
+
+void WFileList::onContextMenu(const QPoint& globalPos)
+{
+  QMenu menu;
+  QAction *copyList = menu.addAction(tr("Copy list"));
+  menu.addSeparator();
+  QAction *clearList = menu.addAction(tr("Clear list"));
+  menu.addSeparator();
+  QAction *clearRoot = menu.addAction(tr("Clear root"));
+
+  QAction *choice = menu.exec(globalPos);
+  if(        choice == nullptr ) {
+    return;
+  } else if( choice == copyList ) {
+    WFileList::copyList();
+  } else if( choice == clearRoot ) {
+    WFileList::clearRoot();
+  } else if( choice == clearList ) {
+    WFileList::clearList();
   }
 }
 

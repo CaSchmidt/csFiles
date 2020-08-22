@@ -87,11 +87,9 @@ public slots:
   void clearRoot();
   void copyList();
 
-private slots:
-  void showContextMenu(const QPoint& pos);
-
 private:
   void onAdd() final;
+  void onContextMenu(const QPoint& globalPos) final;
   void onRemove() final;
 
   bool _autoCurrentDir{false};
