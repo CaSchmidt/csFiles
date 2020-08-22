@@ -70,12 +70,6 @@ WFileList::~WFileList()
 {
 }
 
-void WFileList::setEnabledButtons(const bool add_on, const bool remove_on)
-{
-  button(Add)->setEnabled(add_on);
-  button(Remove)->setEnabled(remove_on);
-}
-
 bool WFileList::autoCurrentDir() const
 {
   return _autoCurrentDir;

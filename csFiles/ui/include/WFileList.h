@@ -61,8 +61,6 @@ public:
   WFileList(QWidget *parent = nullptr, Qt::WindowFlags f = Qt::WindowFlags());
   ~WFileList();
 
-  void setEnabledButtons(const bool add_on, const bool remove_on);
-
   bool autoCurrentDir() const;
   void setAutoCurrentDir(const bool on);
 
