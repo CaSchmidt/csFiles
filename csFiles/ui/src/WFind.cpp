@@ -237,6 +237,8 @@ void WFind::showResultsContextMenu(const QPoint& p)
 {
   QMenu menu;
 
+  QAction  *editAction = menu.addAction(tr("Edit"));
+  menu.addSeparator();
   QAction  *grepAction = menu.addAction(tr("grep results"));
   menu.addSeparator();
   QAction  *openAction = menu.addAction(tr("Open location"));
@@ -246,6 +248,11 @@ void WFind::showResultsContextMenu(const QPoint& p)
   QAction *choice = menu.exec(csMapToGlobal(ui->resultsView, p));
   if(        choice == nullptr ) {
     return;
+
+  } else if( choice == editAction ) {
+    const QModelIndex index = ui->resultsView->indexAt(p);
+    const QString filename = _resultsModel->data(index, Qt::EditRole).toString();
+    emit editFileRequested(filename, 1);
 
   } else if( choice == grepAction ) {
     emit grepRequested(_resultsModel->rootPath(), _resultsModel->files());
