@@ -92,10 +92,11 @@ void WMainWindow::editFile(const QString& filename, int line)
   }
 
   const QString quotedFilename = QStringLiteral("\"%1\"").arg(filename);
+  const QString        lineStr = QString::number(qMax<int>(1, line));
 
   QString args = Settings::editorArgs;
   args.replace(QStringLiteral("%F"), quotedFilename);
-  args.replace(QStringLiteral("%L"), QString::number(line));
+  args.replace(QStringLiteral("%L"), lineStr);
 
   const QString cmd = QStringLiteral("\"%1\" %2").arg(Settings::editorExec).arg(args);
   QProcess::startDetached(cmd);
