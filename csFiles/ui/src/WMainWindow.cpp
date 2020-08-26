@@ -87,7 +87,7 @@ void WMainWindow::closeTab()
 
 void WMainWindow::editFile(const QString& filename, int line)
 {
-  if( filename.isEmpty() ) {
+  if( filename.isEmpty()  ||  !QFileInfo(filename).isFile() ) {
     return;
   }
 
