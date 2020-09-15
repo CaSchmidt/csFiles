@@ -41,6 +41,7 @@
 
 #include "MatchResultsModel.h"
 #include "ResultsProxyDelegate.h"
+#include "Settings.h"
 
 #include "WGrep.h"
 #include "ui_WGrep.h"
@@ -213,6 +214,24 @@ void WGrep::clearResults()
   _resultsModel->setRoot(new MatchResultsRoot(QString()));
 }
 
+void WGrep::copyLine(const QModelIndex& index)
+{
+  auto [file, line] = priv::makeLocation(index);
+  if( file == nullptr ) {
+    return;
+  }
+
+  const QString filename = Settings::grep::copyLocationDisplayName
+      ? file->data(0, Qt::DisplayRole).toString()
+      : file->filename();
+
+  const QString text = line != nullptr
+      ? QStringLiteral("%1:%2").arg(filename).arg(line->number())
+      : filename;
+
+  csSetClipboardText(text);
+}
+
 void WGrep::editFile(const QModelIndex& index)
 {
   auto [file, line] = priv::makeLocation(index);
@@ -284,9 +303,11 @@ void WGrep::showContextMenu(const QPoint& p)
 
   QAction  *editAction = menu.addAction(tr("Edit"));
   menu.addSeparator();
+  QAction  *copyAction = menu.addAction(tr("Copy line location"));
+  menu.addSeparator();
   QAction  *grepAction = menu.addAction(tr("grep results"));
   menu.addSeparator();
-  QAction  *openAction = menu.addAction(tr("Open location"));
+  QAction  *openAction = menu.addAction(tr("Open file system location"));
   menu.addSeparator();
   QAction *clearAction = menu.addAction(tr("Clear results"));
 
@@ -296,6 +317,9 @@ void WGrep::showContextMenu(const QPoint& p)
 
   } else if( choice == editAction ) {
     editFile(ui->resultsView->indexAt(p));
+
+  } else if( choice == copyAction ) {
+    copyLine(ui->resultsView->indexAt(p));
 
   } else if( choice == grepAction ) {
     MatchResultsRoot *root = dynamic_cast<MatchResultsRoot*>(_resultsModel->root());

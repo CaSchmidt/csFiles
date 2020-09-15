@@ -52,6 +52,12 @@ namespace Settings {
 
   } // namespace find
 
+  namespace grep {
+
+    bool copyLocationDisplayName{false};
+
+  } // namespace grep
+
   // Functions ///////////////////////////////////////////////////////////////
 
   void load()
@@ -59,10 +65,14 @@ namespace Settings {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                        QStringLiteral("csLabs"), QStringLiteral("csFiles"));
 
+    // global ////////////////////////////////////////////////////////////////
+
     settings.beginGroup(QStringLiteral("global"));
     global::editorExec = settings.value(QStringLiteral("editor_exec"), global::editorExec).toString();
     global::editorArgs = settings.value(QStringLiteral("editor_args"), global::editorArgs).toString();
     settings.endGroup();
+
+    // find //////////////////////////////////////////////////////////////////
 
     settings.beginGroup(QStringLiteral("find_extensions"));
     int i = 0;
@@ -79,6 +89,12 @@ namespace Settings {
       i++;
     }
     settings.endGroup();
+
+    // grep //////////////////////////////////////////////////////////////////
+
+    settings.beginGroup(QStringLiteral("grep"));
+    grep::copyLocationDisplayName = settings.value(QStringLiteral("copy_location_displayname"), grep::copyLocationDisplayName).toBool();
+    settings.endGroup();
   }
 
   void save()
@@ -87,10 +103,14 @@ namespace Settings {
                        QStringLiteral("csLabs"), QStringLiteral("csFiles"));
     settings.clear();
 
+    // global ////////////////////////////////////////////////////////////////
+
     settings.beginGroup(QStringLiteral("global"));
     settings.setValue(QStringLiteral("editor_exec"), global::editorExec);
     settings.setValue(QStringLiteral("editor_args"), global::editorArgs);
     settings.endGroup();
+
+    // find //////////////////////////////////////////////////////////////////
 
     if( !find::extensions.isEmpty() ) {
       settings.beginGroup(QStringLiteral("find_extensions"));
@@ -100,6 +120,12 @@ namespace Settings {
       }
       settings.endGroup();
     }
+
+    // grep //////////////////////////////////////////////////////////////////
+
+    settings.beginGroup(QStringLiteral("grep"));
+    settings.setValue(QStringLiteral("copy_location_displayname"), grep::copyLocationDisplayName);
+    settings.endGroup();
 
     //////////////////////////////////////////////////////////////////////////
 

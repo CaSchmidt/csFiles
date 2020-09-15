@@ -56,6 +56,7 @@ public slots:
 
 private slots:
   void clearResults();
+  void copyLine(const QModelIndex& index);
   void editFile(const QModelIndex& index);
   void executeGrep();
   void openLocation(const QModelIndex& index);

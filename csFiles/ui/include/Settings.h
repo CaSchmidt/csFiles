@@ -66,6 +66,12 @@ namespace Settings {
 
   } // namespace find
 
+  namespace grep {
+
+    extern bool copyLocationDisplayName;
+
+  } // namespace grep
+
   // Functions ///////////////////////////////////////////////////////////////
 
   void load();
