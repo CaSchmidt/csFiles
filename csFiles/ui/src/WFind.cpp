@@ -113,10 +113,10 @@ WFind::WFind(QWidget *parent, Qt::WindowFlags f)
     _completeSuffixAction = extMenu->addAction(tr("Complete suffix"));
     _completeSuffixAction->setCheckable(true);
 
-    if( !Settings::extensions.isEmpty() ) {
+    if( !Settings::find::extensions.isEmpty() ) {
       extMenu->addSeparator();
 
-      for(const Settings::Preset& p : Settings::extensions) {
+      for(const Settings::Preset& p : Settings::find::extensions) {
         QAction *action = extMenu->addAction(p.name);
         action->setData(p.value);
         connect(action, &QAction::triggered, this, &WFind::setExtension);

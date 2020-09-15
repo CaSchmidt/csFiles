@@ -39,10 +39,18 @@ namespace Settings {
 
   // Settings ////////////////////////////////////////////////////////////////
 
-  QString editorExec(QStringLiteral("notepad.exe"));
-  QString editorArgs(QStringLiteral("%F"));
+  namespace global {
 
-  Presets extensions;
+    QString editorExec(QStringLiteral("notepad.exe"));
+    QString editorArgs(QStringLiteral("%F"));
+
+  } // namespace global
+
+  namespace find {
+
+    Presets extensions;
+
+  } // namespace find
 
   // Functions ///////////////////////////////////////////////////////////////
 
@@ -51,12 +59,12 @@ namespace Settings {
     QSettings settings(QSettings::IniFormat, QSettings::UserScope,
                        QStringLiteral("csLabs"), QStringLiteral("csFiles"));
 
-    settings.beginGroup(QStringLiteral("editor"));
-    editorExec = settings.value(QStringLiteral("exec"), editorExec).toString();
-    editorArgs = settings.value(QStringLiteral("args"), editorArgs).toString();
+    settings.beginGroup(QStringLiteral("global"));
+    global::editorExec = settings.value(QStringLiteral("editor_exec"), global::editorExec).toString();
+    global::editorArgs = settings.value(QStringLiteral("editor_args"), global::editorArgs).toString();
     settings.endGroup();
 
-    settings.beginGroup(QStringLiteral("extensions"));
+    settings.beginGroup(QStringLiteral("find_extensions"));
     int i = 0;
     while( true ) {
       const QString  name = settings.value(QStringLiteral("name_%1").arg(i), QString()).toString();
@@ -66,7 +74,7 @@ namespace Settings {
         break;
       }
 
-      extensions.push_back(Preset(name.simplified(), cleanPatternList(value)));
+      find::extensions.push_back(Preset(name.simplified(), cleanPatternList(value)));
 
       i++;
     }
@@ -79,16 +87,16 @@ namespace Settings {
                        QStringLiteral("csLabs"), QStringLiteral("csFiles"));
     settings.clear();
 
-    settings.beginGroup(QStringLiteral("editor"));
-    settings.setValue(QStringLiteral("exec"), editorExec);
-    settings.setValue(QStringLiteral("args"), editorArgs);
+    settings.beginGroup(QStringLiteral("global"));
+    settings.setValue(QStringLiteral("editor_exec"), global::editorExec);
+    settings.setValue(QStringLiteral("editor_args"), global::editorArgs);
     settings.endGroup();
 
-    if( !extensions.isEmpty() ) {
-      settings.beginGroup(QStringLiteral("extensions"));
-      for(int i = 0; i < extensions.size(); i++) {
-        settings.setValue(QStringLiteral("name_%1").arg(i), extensions.at(i).name.simplified());
-        settings.setValue(QStringLiteral("value_%1").arg(i), cleanPatternList(extensions.at(i).value));
+    if( !find::extensions.isEmpty() ) {
+      settings.beginGroup(QStringLiteral("find_extensions"));
+      for(int i = 0; i < find::extensions.size(); i++) {
+        settings.setValue(QStringLiteral("name_%1").arg(i), find::extensions.at(i).name.simplified());
+        settings.setValue(QStringLiteral("value_%1").arg(i), cleanPatternList(find::extensions.at(i).value));
       }
       settings.endGroup();
     }

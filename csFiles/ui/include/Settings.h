@@ -53,10 +53,18 @@ namespace Settings {
 
   // Settings ////////////////////////////////////////////////////////////////
 
-  extern QString editorExec;
-  extern QString editorArgs;
+  namespace global {
 
-  extern Presets extensions;
+    extern QString editorExec;
+    extern QString editorArgs;
+
+  } // namespace global
+
+  namespace find {
+
+    extern Presets extensions;
+
+  } // namespace find
 
   // Functions ///////////////////////////////////////////////////////////////
 
